@@ -1,7 +1,13 @@
-# 前言
+<p align="center"><a href="https://vuejs.org" target="_blank" rel="noopener noreferrer"><img width="100" src="https://vuejs.org/images/logo.png" alt="Vue logo"></a></p>
 
-为什么会想去做这么一个源码分析的东西呢？22 年年末因为家里老人身体不好，就直接从才入职的一家公司辞职了，23 年二月份回到上海，一边完善自己的博客主题，一边寻找工作，但是没想到今年的形势会比以往更严峻些。找着找着目前也不太急了，就想沉淀下提升自己吧，所以就有了分析下 Vue 源码的想法，当然之前看过一些源码不过没有很系统的去看待，当时都是为了面试刷的，哈哈哈。
+## 介绍
 
-本次分析我打算以`v2.7.14`版本为基础，目前`Vue 2`将于 2023 年 12 月 31 日停止维护。详见[Vue2 延长 LTS](https://v2.vuejs.org/lts/)，所以后续公司的项目大家要首先考虑 vue3 了哦。
+这是一个基于 vue v2.7.14 版本的源码阅读的仓库，虽然`Vue 2`将于 2023 年 12 月 31 日停止维护，详见[Vue2 延长 LTS](https://v2.vuejs.org/lts/)，但是作为一个长期使用 vue2 的用户来说，还是想先把 vue2 的源码完整的阅读一遍；
 
-希望能和大家一起进步，欢迎 star 和 issue😘
+[文档地址](https://wangyang0210.github.io/vue2SourceCodeReading/v2/#/Docs)
+
+## License
+
+[MIT](https://opensource.org/licenses/MIT)
+
+Copyright (c) 2023-present, WangYang
