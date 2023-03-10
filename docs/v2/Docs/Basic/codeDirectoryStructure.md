@@ -24,7 +24,7 @@ vue
 ├─ BACKERS.md                          # 捐赠或赞助信息
 ├─ CHANGELOG.md                        # 版本更新日志
 ├─ LICENSE                             # 开源版本协议
-├─ README.md                           # 项目介绍文件
+├─ README.md                           # 项目介绍文档
 ├─ api-extractor.json                  # api提取器配置文件
 ├─ api-extractor.tsconfig.json         # api提取器配置文件
 ├─ benchmarks                          # 性能测试文件
@@ -40,7 +40,7 @@ vue
 │    ├─ reorder-list                   # 重新排序列表
 │    │    └─ index.html
 │    ├─ ssr                            # 服务端渲染
-│    │    ├─ README.md
+│    │    ├─ README.md                 # 项目介绍文档
 │    │    ├─ common.js
 │    │    ├─ renderToStream.js
 │    │    └─ renderToString.js
@@ -52,9 +52,9 @@ vue
 │    ├─ index.d.ts
 │    ├─ index.js
 │    ├─ index.mjs
-│    └─ package.json
-├─ dist                                 # 制品输出目录
-├─ examples                             # 应用示例目录
+│    └─ package.json                   # 项目的描述文件
+├─ dist                                # 制品输出目录
+├─ examples                            # 应用示例目录
 │    ├─ classic
 │    │    ├─ commits
 │    │    ├─ elastic-header
@@ -74,53 +74,49 @@ vue
 │           ├─ svg.html
 │           ├─ todomvc.html
 │           └─ tree.html
-├─ package.json                         # 项目的描述文件
-├─ packages                             # 其他独立发布的包目录
-│    ├─ compiler-sfc                    # 编译单文件
-│    │    ├─ api-extractor.json
-│    │    ├─ dist
-│    │    ├─ node_modules
-│    │    ├─ package.json
-│    │    ├─ src
-│    │    └─ test
-│    ├─ server-renderer                 # 服务端渲染
-│    │    ├─ README.md
+├─ package.json                        # 项目的描述文件
+├─ packages                            # 其他独立发布的包目录
+│    ├─ compiler-sfc                   # 编译单文件
+│    │    ├─ api-extractor.json        # api提取器配置文件
+│    │    ├─ package.json              # 项目的描述文件
+│    │    ├─ src                       # 源码
+│    │    └─ test                      # 测试用例
+│    ├─ server-renderer                # 服务端渲染
+│    │    ├─ README.md                 # 项目介绍文档
 │    │    ├─ basic.js
 │    │    ├─ build.dev.js
 │    │    ├─ build.prod.js
 │    │    ├─ client-plugin.d.ts
 │    │    ├─ client-plugin.js
 │    │    ├─ index.js
-│    │    ├─ node_modules
-│    │    ├─ package.json
+│    │    ├─ package.json              # 项目的描述文件
 │    │    ├─ server-plugin.d.ts
 │    │    ├─ server-plugin.js
-│    │    ├─ src
-│    │    ├─ test
-│    │    └─ types
-│    └─ template-compiler               # 模板编译
-│           ├─ README.md
+│    │    ├─ src                       # 源码
+│    │    ├─ test                      # 测试用例
+│    │    └─ types                     # 类型声明
+│    └─ template-compiler              # 模板编译
+│           ├─ README.md               # 项目介绍文档
 │           ├─ browser.js
 │           ├─ build.js
 │           ├─ index.js
-│           ├─ node_modules
-│           ├─ package.json
-│           └─ types
-├─ pnpm-lock.yaml                        # 版本依赖的锁定文件
-├─ pnpm-workspace.yaml                   # 工作空间的配置文件
-├─ scripts                               # 构建脚本目录
-│    ├─ alias.js
-│    ├─ build.js
-│    ├─ config.js
-│    ├─ feature-flags.js
-│    ├─ gen-release-note.js
-│    ├─ git-hooks
+│           ├─ package.json            # 项目的描述文件
+│           └─ types                   # 类型声明
+├─ pnpm-lock.yaml                      # 版本依赖的锁定文件
+├─ pnpm-workspace.yaml                 # 工作空间的配置文件
+├─ scripts                             # 构建脚本目录
+│    ├─ alias.js                       # 别名配置
+│    ├─ build.js                       # 使用rollup对config中配置进行编译
+│    ├─ config.js                      # 配置文件
+│    ├─ feature-flags.js               # 新特性标记
+│    ├─ gen-release-note.js            # 生成发行版本日志
+│    ├─ git-hooks                      # git钩子
 │    │    ├─ commit-msg
 │    │    └─ pre-commit
-│    ├─ release.js
-│    └─ verify-commit-msg.js
-├─ src                                   # 源码目录
-│    ├─ compiler                         # 编译相关代码
+│    ├─ release.js                     # 版本发布
+│    └─ verify-commit-msg.js           # 校验commit信息
+├─ src                                 # 源码目录
+│    ├─ compiler                       # 编译相关代码
 │    │    ├─ codeframe.ts
 │    │    ├─ codegen
 │    │    ├─ create-compiler.ts
@@ -131,22 +127,22 @@ vue
 │    │    ├─ optimizer.ts
 │    │    ├─ parser
 │    │    └─ to-function.ts
-│    ├─ core                             # 核心代码
-│    │    ├─ components
+│    ├─ core                            # 核心代码
+│    │    ├─ components                 # 组件相关
 │    │    ├─ config.ts
-│    │    ├─ global-api
+│    │    ├─ global-api                 # 全局api
 │    │    ├─ index.ts
-│    │    ├─ instance
+│    │    ├─ instance                  # vue实例
 │    │    ├─ observer
 │    │    ├─ util
 │    │    └─ vdom
 │    ├─ global.d.ts
-│    ├─ platforms                        # 平台支持
-│    │    └─ web                         # web平台
-│    ├─ shared                           # 共享代码
+│    ├─ platforms                       # 平台支持
+│    │    └─ web                        # web平台
+│    ├─ shared                          # 共享代码
 │    │    ├─ constants.ts
 │    │    └─ util.ts
-│    ├─ types                            # 类型声明
+│    ├─ types                           # 类型声明
 │    │    ├─ compiler.ts
 │    │    ├─ component.ts
 │    │    ├─ global-api.ts
@@ -167,7 +163,7 @@ vue
 │           ├─ index.ts
 │           ├─ reactivity
 │           └─ sfc-helpers
-├─ test                                    # 测试用例
+├─ test                                 # 测试用例
 │    ├─ e2e
 │    │    ├─ async-edge-cases.html
 │    │    ├─ async-edge-cases.spec.ts
@@ -204,7 +200,7 @@ vue
 │    │    └─ modules
 │    └─ vitest.setup.ts
 ├─ tsconfig.json                            # ts配置文件
-├─ types                                    # 类型文件声明目录
+├─ types                                    # 类型声明
 │    ├─ common.d.ts
 │    ├─ index.d.ts
 │    ├─ jsx.d.ts
