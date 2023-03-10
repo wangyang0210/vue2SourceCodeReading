@@ -4,7 +4,7 @@
 
 这是一个基于 vue v2.7.14 版本的源码阅读的仓库，虽然`Vue 2`将于 2023 年 12 月 31 日停止维护，详见[Vue2 延长 LTS](https://v2.vuejs.org/lts/)，但是作为一个长期使用 vue2 的用户来说，还是想先把 vue2 的源码完整的阅读一遍；
 
-[文档地址](https://wangyang0210.github.io/vue2SourceCodeReading/v2/#/Docs)
+[文档地址](https://wangyang0210.github.io/vue2SourceCodeReading/v2/#/)
 
 ## License
 
