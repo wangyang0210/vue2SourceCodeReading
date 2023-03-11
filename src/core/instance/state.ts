@@ -51,19 +51,24 @@ export function proxy(target: Object, sourceKey: string, key: string) {
 
 export function initState(vm: Component) {
   const opts = vm.$options
+  // 存在props则初始化props
   if (opts.props) initProps(vm, opts.props)
 
   // Composition API
+  // 组合式API
   initSetup(vm)
-
+  // 存在方法则初始化方法
   if (opts.methods) initMethods(vm, opts.methods)
+  // 存在data则初始化data
   if (opts.data) {
     initData(vm)
   } else {
     const ob = observe((vm._data = {}))
     ob && ob.vmCount++
   }
+  // 存在计算属性则初始化计算属性
   if (opts.computed) initComputed(vm, opts.computed)
+  // 存在监听且监听不等于nativeWatch（这个主要是针对火狐浏览器进行处理）则初始化监听
   if (opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch)
   }
@@ -124,6 +129,9 @@ function initData(vm: Component) {
   data = vm._data = isFunction(data) ? getData(data, vm) : data || {}
   if (!isPlainObject(data)) {
     data = {}
+    // https://v2.cn.vuejs.org/v2/guide/components.html#data-%E5%BF%85%E9%A1%BB%E6%98%AF%E4%B8%80%E4%B8%AA%E5%87%BD%E6%95%B0
+    // 一个组件的 data 选项必须是一个函数，因此每个实例可以维护一份被返回对象的独立的拷贝
+    // 避免了实例之间相互影响
     __DEV__ &&
       warn(
         'data functions should return an object:\n' +

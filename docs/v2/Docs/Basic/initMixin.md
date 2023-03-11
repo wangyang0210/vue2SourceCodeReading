@@ -1,3 +1,14 @@
+# 前言
+
+今天我们来解密下`init.ts`中的代码内容，并结合 vue 生命周期来分析下 vue 的初始化；
+
+# 内容
+
+![lifecycle.png](https://v2.vuejs.org/images/lifecycle.png)
+
+## init.ts
+
+```javascript
 import config from '../config'
 import { initProxy } from './proxy'
 import { initState } from './state'
@@ -185,3 +196,101 @@ function resolveModifiedOptions(
   }
   return modified
 }
+
+```
+
+## Demo 演示
+
+> demo 位于`example/docs/01.lifecycle.html`
+
+通过`debugger`的方式，能够更直观的查看到整个调用的过程；这里罗列了选项式 api 和组合式 api，后续的 demo 都会以组合式 api 为主。
+
+具体的 debugger 方法可以查看微软的文档[devtools-guide-chromium](https://learn.microsoft.com/en-us/microsoft-edge/devtools-guide-chromium/javascript/)，一般来说 F9 进行调试即可；如果你想跳过某一函数，那就 F10；
+
+```
+<script src="../../dist/vue.js"></script>
+
+<div id="app">{{msg}}</div>
+
+<script>
+  debugger
+
+  //   Options API || 设置了el
+  //   var app = new Vue({
+  //     el: '#app',
+  //     data: {
+  //       msg: 'Hello Vue!'
+  //     },
+  //     beforeCreate() {
+  //       console.log('beforeCreate')
+  //     },
+  //     created() {
+  //       console.log('created')
+  //     },
+  //     beforeMount() {
+  //       console.log('beforeMount')
+  //     },
+  //     mounted() {
+  //       console.log('mounted')
+  //     }
+  //   })
+
+  // Options API || 手动$mount
+  //   new Vue({
+  //     data: () => ({
+  //       msg: 'helloWord'
+  //     }),
+  //     beforeCreate: () => {
+  //       console.log('beforeCreate')
+  //     },
+  //     created: () => {
+  //       console.log('created')
+  //     },
+  //     beforeMount: () => {
+  //       console.log('beforeMount')
+  //     },
+  //     mounted: () => {
+  //       console.log('mounted')
+  //     }
+  //   }).$mount('#app')
+
+  // Composition API
+  const { ref, beforeCreate, created, beforeMount, mounted } = Vue
+  new Vue({
+    setup(props) {
+      const msg = ref('Hello World!')
+      return { msg }
+    },
+    beforeCreate() {
+      console.log('beforeCreate')
+    },
+    created() {
+      console.log('created')
+    },
+    beforeMount() {
+      console.log('beforeMount')
+    },
+    mounted() {
+      console.log('mounted')
+    }
+  }).$mount('#app')
+</script>
+
+```
+
+## 内容总结
+
+> 这里我们总结下`init.ts`中大致的内容
+
+1. 生成 vue 实例 Id；
+2. 标记 vue 实例；
+3. 如果是子组件则传入 vue 实例和选项并初始化组件，否则则进行选项参数合并，将用户传入的选项和构造函数本身的选项进行合并；
+4. 初始化实例生命周期相关属性，如：$parent、$root、$children、$refs 等；
+5. 初始化组件相关的事件监听，父级存在监听事件则挂载到当前实例上；
+6. 初始化渲染，如：$slots、$scopedSlots、$createElement、$attrs、$listeners；
+7. 调用`beforeCreate`生命周期钩子函数
+8. 初始化注入数据，在 data/props 之前进行 inject，以允许一个祖先组件向其所有子孙后代注入一个依赖（说白了就是有个传家宝，爷爷要想传给孙子，那就要爸爸先 inject，再给儿子）
+9. 初始化状态，如：props、setup、methods、data(|| observe)、computed、watch
+10. 在 data/props 之后进行 provide
+11. 调用`created`生命周期钩子函数，完成初始化
+12. 如果设置了`el`则自动挂载到对应的元素上，不然就要自己`$mount`；

@@ -4,7 +4,9 @@ import { LIFECYCLE_HOOKS } from 'shared/constants'
 import type { Component } from 'types/component'
 
 /**
+ *
  * @internal
+ *
  */
 export interface Config {
   // user

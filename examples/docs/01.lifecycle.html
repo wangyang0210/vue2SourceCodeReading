@@ -1,0 +1,67 @@
+<script src="../../dist/vue.js"></script>
+
+<div id="app">{{msg}}</div>
+
+<script>
+  debugger
+
+  //   Options API || 设置了el
+  //   var app = new Vue({
+  //     el: '#app',
+  //     data: {
+  //       msg: 'Hello Vue!'
+  //     },
+  //     beforeCreate() {
+  //       console.log('beforeCreate')
+  //     },
+  //     created() {
+  //       console.log('created')
+  //     },
+  //     beforeMount() {
+  //       console.log('beforeMount')
+  //     },
+  //     mounted() {
+  //       console.log('mounted')
+  //     }
+  //   })
+
+  // Options API || 手动$mount
+  //   new Vue({
+  //     data: () => ({
+  //       msg: 'helloWord'
+  //     }),
+  //     beforeCreate: () => {
+  //       console.log('beforeCreate')
+  //     },
+  //     created: () => {
+  //       console.log('created')
+  //     },
+  //     beforeMount: () => {
+  //       console.log('beforeMount')
+  //     },
+  //     mounted: () => {
+  //       console.log('mounted')
+  //     }
+  //   }).$mount('#app')
+
+  // Composition API
+  const { ref, beforeCreate, created, beforeMount, mounted } = Vue
+  new Vue({
+    setup(props) {
+      const msg = ref('Hello World!')
+      return { msg }
+    },
+    beforeCreate() {
+      console.log('beforeCreate')
+    },
+    created() {
+      console.log('created')
+    },
+    beforeMount() {
+      console.log('beforeMount')
+    },
+    mounted() {
+      console.log('mounted')
+    }
+  }).$mount('#app')
+</script>

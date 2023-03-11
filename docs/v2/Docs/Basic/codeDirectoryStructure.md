@@ -145,9 +145,9 @@ vue
 │    ├─ types                           # 类型声明
 │    │    ├─ compiler.ts
 │    │    ├─ component.ts
-│    │    ├─ global-api.ts
+│    │    ├─ global-api.ts              # 全局api类型声明
 │    │    ├─ modules.d.ts
-│    │    ├─ options.ts
+│    │    ├─ options.ts                 # 选项类型声明
 │    │    ├─ ssr.ts
 │    │    ├─ utils.ts
 │    │    └─ vnode.ts

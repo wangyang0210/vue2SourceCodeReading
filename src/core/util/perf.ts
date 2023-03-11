@@ -4,6 +4,7 @@ export let mark
 export let measure
 
 if (__DEV__) {
+  // https://developer.mozilla.org/zh-CN/docs/Web/API/performance_property
   const perf = inBrowser && window.performance
   /* istanbul ignore if */
   if (

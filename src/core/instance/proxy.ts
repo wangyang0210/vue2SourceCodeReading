@@ -1,5 +1,5 @@
 /* not type checking this file because flow doesn't play well with Proxy */
-
+/* 不检查这个文件的类型，因为flow在proxy中并不能很兼容*/
 import config from 'core/config'
 import { warn, makeMap, isNative } from '../util/index'
 

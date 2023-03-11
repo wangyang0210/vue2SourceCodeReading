@@ -24,7 +24,11 @@ export function initRender(vm: Component) {
   const options = vm.$options
   const parentVnode = (vm.$vnode = options._parentVnode!) // the placeholder node in parent tree
   const renderContext = parentVnode && (parentVnode.context as Component)
+  // 插槽
+  // https://v2.cn.vuejs.org/v2/api/#vm-slots
   vm.$slots = resolveSlots(options._renderChildren, renderContext)
+  // 作用域插槽
+  // https://v2.cn.vuejs.org/v2/api/#vm-scopedSlots
   vm.$scopedSlots = parentVnode
     ? normalizeScopedSlots(
         vm.$parent!,
@@ -37,9 +41,12 @@ export function initRender(vm: Component) {
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
   // @ts-expect-error
+  // 将createElement函数绑定到实例上，以保证正确的上下文渲染顺序，
+  // 内部版本使用的渲染函数来自模板编译
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
   // user-written render functions.
+  // 公共版本使用用户编写的渲染函数
   // @ts-expect-error
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
 
@@ -68,6 +75,10 @@ export function initRender(vm: Component) {
       true
     )
   } else {
+    // 包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (class 和 style 除外)。
+    // 当一个组件没有声明任何 prop 时，这里会包含所有父作用域的绑定(class 和 style 除外)，
+    // 并且可以通过 v-bind="$attrs" 传入内部组件——在创建高级别的组件时非常有用。
+    // https://v2.cn.vuejs.org/v2/api/?#vm-attrs
     defineReactive(
       vm,
       '$attrs',
@@ -75,6 +86,9 @@ export function initRender(vm: Component) {
       null,
       true
     )
+    // 包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。
+    // 它可以通过 v-on="$listeners" 传入内部组件——在创建更高层次的组件时非常有用。
+    // https://v2.cn.vuejs.org/v2/api/?#vm-listeners
     defineReactive(
       vm,
       '$listeners',
