@@ -124,6 +124,10 @@ function initProps(vm: Component, propsOptions: Object) {
   toggleObserving(true)
 }
 
+/**
+ * 初始化data
+ * @param vm
+ */
 function initData(vm: Component) {
   let data: any = vm.$options.data
   data = vm._data = isFunction(data) ? getData(data, vm) : data || {}
@@ -166,7 +170,12 @@ function initData(vm: Component) {
   const ob = observe(data)
   ob && ob.vmCount++
 }
-
+/**
+ * 获取data内容
+ * @param data
+ * @param vm
+ * @returns
+ */
 export function getData(data: Function, vm: Component): any {
   // #7573 disable dep collection when invoking data getters
   pushTarget()

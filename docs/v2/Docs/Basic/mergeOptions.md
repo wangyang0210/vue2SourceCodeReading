@@ -1,24 +1,16 @@
-import config from '../config'
-import { warn } from './debug'
-import { set } from '../observer/index'
-import { unicodeRegExp } from './lang'
-import { nativeWatch, hasSymbol } from './env'
-import { isArray, isFunction } from 'shared/util'
+# 前言
 
-import { ASSET_TYPES, LIFECYCLE_HOOKS } from 'shared/constants'
+前面我们简单的了解了 vue 初始化时的一些大概的流程，这里我们详细的了解下具体的内容;
 
-import {
-  extend,
-  hasOwn,
-  camelize,
-  toRawType,
-  capitalize,
-  isBuiltInTag,
-  isPlainObject
-} from 'shared/util'
-import type { Component } from 'types/component'
-import type { ComponentOptions } from 'types/options'
+# 内容
 
+这一块主要围绕`init.ts`中的`mergeOptions`进行剖析。
+
+## mergeOptions
+
+> `mergeOptions`的方法位于`scr/core/util/options.ts`中,除了`resolveAsset`未被调用外，其他都在这一层级会被调用；
+
+```typeScript
 /**
  * Option overwriting strategies are functions that handle
  * how to merge a parent option value and a child option
@@ -557,3 +549,4 @@ export function resolveAsset(
   }
   return res
 }
+```

@@ -33,6 +33,11 @@ export function isPrimitive(value: any): boolean {
   )
 }
 
+/**
+ * 检测传入值是否为函数类型
+ * @param value
+ * @returns
+ */
 export function isFunction(value: any): value is (...args: any[]) => any {
   return typeof value === 'function'
 }
@@ -58,6 +63,8 @@ export function toRawType(value: any): string {
 /**
  * Strict object type check. Only returns true
  * for plain JavaScript objects.
+ *
+ * 严格的对象检查，只返回true 只针对普通的JavaScript的对象
  */
 export function isPlainObject(obj: any): boolean {
   return _toString.call(obj) === '[object Object]'
@@ -149,6 +156,8 @@ export function remove(arr: Array<any>, item: any): Array<any> | void {
 
 /**
  * Check whether an object has the property.
+ *
+ * 检查对象是否存在对应的属性
  */
 const hasOwnProperty = Object.prototype.hasOwnProperty
 export function hasOwn(obj: Object | Array<any>, key: string): boolean {
@@ -157,6 +166,7 @@ export function hasOwn(obj: Object | Array<any>, key: string): boolean {
 
 /**
  * Create a cached version of a pure function.
+ * 创建一个纯函数的缓存版本
  */
 export function cached<R>(fn: (str: string) => R): (sr: string) => R {
   const cache: Record<string, R> = Object.create(null)
@@ -168,6 +178,8 @@ export function cached<R>(fn: (str: string) => R): (sr: string) => R {
 
 /**
  * Camelize a hyphen-delimited string.
+ *
+ * 使用驼峰代替-连字符, ru ab-cd => acCd
  */
 const camelizeRE = /-(\w)/g
 export const camelize = cached((str: string): string => {
@@ -234,6 +246,7 @@ export function toArray(list: any, start?: number): Array<any> {
 
 /**
  * Mix properties into target object.
+ * 合并内容到指定对象中
  */
 export function extend(
   to: Record<PropertyKey, any>,

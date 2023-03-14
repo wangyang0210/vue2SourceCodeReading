@@ -83,6 +83,7 @@ export function initMixin(Vue: typeof Component) {
     // https://v2.cn.vuejs.org/v2/api/#provide-inject
     // 在data/props前进行inject
     initInjections(vm) // resolve injections before data/props
+    // 初始化状态
     initState(vm)
     // https://v2.cn.vuejs.org/v2/api/#provide-inject
     // provide 父组件提供的数据
@@ -119,6 +120,7 @@ export function initInternalComponent(
 ) {
   const opts = (vm.$options = Object.create((vm.constructor as any).options))
   // doing this because it's faster than dynamic enumeration.
+  // 这样做是因为比动态的枚举更快
   const parentVnode = options._parentVnode
   opts.parent = options.parent
   opts._parentVnode = parentVnode
@@ -143,16 +145,20 @@ export function initInternalComponent(
  */
 export function resolveConstructorOptions(Ctor: typeof Component) {
   let options = Ctor.options
+  // 适配组合式API
   if (Ctor.super) {
     const superOptions = resolveConstructorOptions(Ctor.super)
     const cachedSuperOptions = Ctor.superOptions
     if (superOptions !== cachedSuperOptions) {
       // super option changed,
       // need to resolve new options.
+      // options变更时需重新解析
       Ctor.superOptions = superOptions
       // check if there are any late-modified/attached options (#4976)
+      // 检查是否有后面修改或者附加的options
       const modifiedOptions = resolveModifiedOptions(Ctor)
       // update base extend options
+      // 存在修改则进行合并
       if (modifiedOptions) {
         extend(Ctor.extendOptions, modifiedOptions)
       }
