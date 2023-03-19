@@ -50,7 +50,8 @@ export function initMixin(Vue: typeof Component) {
     // 避免实例被observed观察
     vm.__v_skip = true
     // effect scope
-    // 影响范围
+    // https://github.com/vuejs/rfcs/blob/master/active-rfcs/0041-reactivity-effect-scope.md
+    // 对内部的响应式对象的副作用effect进行统一管理
     vm._scope = new EffectScope(true /* detached */)
     vm._scope._vm = true
     // merge options
@@ -201,7 +202,7 @@ function resolveModifiedOptions(
 
 ## Demo 演示
 
-> demo 位于`example/docs/01.lifecycle.html`
+> demo 位于`packages/docs/01.lifecycle.html`
 
 通过`debugger`的方式，能够更直观的查看到整个调用的过程；这里罗列了选项式 api 和组合式 api，后续的 demo 都会以组合式 api 为主。
 

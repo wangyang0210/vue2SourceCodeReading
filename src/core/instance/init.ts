@@ -39,7 +39,8 @@ export function initMixin(Vue: typeof Component) {
     // 避免实例被observed观察
     vm.__v_skip = true
     // effect scope
-    // 影响范围
+    // https://github.com/vuejs/rfcs/blob/master/active-rfcs/0041-reactivity-effect-scope.md
+    // 对内部的响应式对象的副作用effect进行统一管理
     vm._scope = new EffectScope(true /* detached */)
     vm._scope._vm = true
     // merge options

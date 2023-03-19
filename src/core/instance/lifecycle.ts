@@ -32,30 +32,48 @@ export function setActiveInstance(vm: Component) {
 }
 
 export function initLifecycle(vm: Component) {
+  // 合并后的options
   const options = vm.$options
 
   // locate first non-abstract parent
   let parent = options.parent
-  // 判断是否是抽象组件，组件的父子关系建立会跳过抽象组件，抽象组件比如keep-alive、transition等
+  // 存在父级并且不是抽象组件（如：keep-alive、transition）
   if (parent && !options.abstract) {
+    // 找到不是抽象组件的实例
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
     }
+    // 将该实例推入父实例的$children数组中
     parent.$children.push(vm)
   }
-
+  // https://v2.cn.vuejs.org/v2/api/#vm-parent
+  // 父实例
   vm.$parent = parent
+  // https://v2.cn.vuejs.org/v2/api/#vm-root
+  // 如果当前实例没有父实例那实例就是自己
   vm.$root = parent ? parent.$root : vm
-
+  // https://v2.cn.vuejs.org/v2/api/#vm-children
+  // 当前实例的子组件，$children既不保证顺序也不是响应式的；
   vm.$children = []
+  // https://v2.cn.vuejs.org/v2/guide/components-edge-cases.html#%E8%AE%BF%E9%97%AE%E5%AD%90%E7%BB%84%E4%BB%B6%E5%AE%9E%E4%BE%8B%E6%88%96%E5%AD%90%E5%85%83%E7%B4%A0
+  // 当 ref 和 v-for 一起使用的时候，你得到的 ref 将会是一个包含了对应数据源的这些子组件的数组
+  // $refs 只会在组件渲染完成之后生效，并且它们不是响应式的。
+  // 避免在模板或计算属性中访问 $refs
   vm.$refs = {}
 
+  // 如果父实例不存在那就赋予_provided空对象
   vm._provided = parent ? parent._provided : Object.create(null)
+  // 初始化监听属性
   vm._watcher = null
+  // 初始化active属性
   vm._inactive = null
+  // 标记指令状态
   vm._directInactive = false
+  // 标记mounted状态
   vm._isMounted = false
+  // 标记destroyed状态
   vm._isDestroyed = false
+  // 标记BeingDestroyed状态
   vm._isBeingDestroyed = false
 }
 

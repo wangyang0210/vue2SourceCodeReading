@@ -1,6 +1,7 @@
 # 前言
 
 前面我们简单的了解了 vue 初始化时的一些大概的流程，这里我们详细的了解下具体的内容;
+这块建议搭建可以根据 demo 进行 debugger 来观察；
 
 # 内容
 
@@ -8,7 +9,7 @@
 
 ## mergeOptions
 
-> `mergeOptions`的方法位于`scr/core/util/options.ts`中,除了`resolveAsset`未被调用外，其他都在这一层级会被调用；
+> `mergeOptions`的方法位于`scr/core/util/options.ts`中;
 
 ```typeScript
 /**

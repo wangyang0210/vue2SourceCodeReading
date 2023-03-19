@@ -4,10 +4,13 @@ export const isArray = Array.isArray
 
 // These helpers produce better VM code in JS engines due to their
 // explicitness and function inlining.
+// 由于它们的显式性和函数内联，这些助手可以在JS引擎中生成更好的VM代码。
+// 判断属性值是否是undefined或者null
 export function isUndef(v: any): v is undefined | null {
   return v === undefined || v === null
 }
 
+// 判断属性值是否不是undefined或者null
 export function isDef<T>(v: T): v is NonNullable<T> {
   return v !== undefined && v !== null
 }

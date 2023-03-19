@@ -10,11 +10,16 @@ import {
 import { updateListeners } from '../vdom/helpers/index'
 
 export function initEvents(vm: Component) {
+  // 创建一个空对象存放_events
   vm._events = Object.create(null)
+  // 创建一个生命周期监听事件的标识属性
+  // Hook Event 可以从组件外部为组件注入额外的生命周期方法
   vm._hasHookEvent = false
   // init parent attached events
+  // 获取initInternalComponent(options合并时候)的父组件自定义事件
   const listeners = vm.$options._parentListeners
   if (listeners) {
+    // 进行事件绑定，将父级的事件绑定到当前组件上
     updateComponentListeners(vm, listeners)
   }
 }
@@ -45,12 +50,13 @@ export function updateComponentListeners(
   oldListeners?: Object | null
 ) {
   target = vm
+  // 更新事件|事件注册
   updateListeners(
-    listeners,
+    listeners, // 父级事件
     oldListeners || {},
-    add,
-    remove,
-    createOnceHandler,
+    add, // 处理$on
+    remove, // 处理$off
+    createOnceHandler, //处理$once
     vm
   )
   target = undefined
