@@ -23,7 +23,10 @@ export function handleError(err: Error, vm: any, info: string) {
               const capture = hooks[i].call(cur, err, vm, info) === false
               if (capture) return
             } catch (e: any) {
+              // https://v2.cn.vuejs.org/v2/api/#errorCaptured
               // 执行errorCaptured发生错误时调用globalHandleError
+              // 在捕获一个来自后代组件的错误时被调用。
+              // 此钩子会收到三个参数：错误对象、发生错误的组件实例以及一个包含错误来源信息的字符串。
               globalHandleError(e, cur, 'errorCaptured hook')
             }
           }
@@ -84,10 +87,15 @@ function globalHandleError(err, vm, info) {
   logError(err, vm, info)
 }
 
+// 输出错误信息
 function logError(err, vm, info) {
+  // DEV环境下直接发出警告
   if (__DEV__) {
     warn(`Error in ${info}: "${err.toString()}"`, vm)
   }
+  // 如果是浏览器环境下且console不为undefined
+  // 就直接console.error输出错误信息
+  // 否则就抛出
   /* istanbul ignore else */
   if (inBrowser && typeof console !== 'undefined') {
     console.error(err)

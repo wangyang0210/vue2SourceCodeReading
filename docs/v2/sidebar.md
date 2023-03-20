@@ -9,4 +9,6 @@
   - [Vue initLifecycle](Docs/Basic/initLifecycle.md)
   - [Vue initEvents](Docs/Basic/initEvents.md)
 
-- [Changelog](Docs/changelog.md)
+- 扩展
+
+  - [Vue Error](Docs/Basic/errorHandler.md)
