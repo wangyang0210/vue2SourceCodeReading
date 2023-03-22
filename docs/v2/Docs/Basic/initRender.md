@@ -1,23 +1,16 @@
-import {
-  warn,
-  nextTick,
-  emptyObject,
-  handleError,
-  defineReactive,
-  isArray
-} from '../util/index'
+# 前言
 
-import { createElement } from '../vdom/create-element'
-import { installRenderHelpers } from './render-helpers/index'
-import { resolveSlots } from './render-helpers/resolve-slots'
-import { normalizeScopedSlots } from '../vdom/helpers/normalize-scoped-slots'
-import VNode, { createEmptyVNode } from '../vdom/vnode'
+前面我们简单的了解了 vue 初始化时的一些大概的流程，这里我们详细的了解下具体的内容;
 
-import { isUpdatingChildComponent } from './lifecycle'
-import type { Component } from 'types/component'
-import { setCurrentInstance } from 'v3/currentInstance'
-import { syncSetupSlots } from 'v3/apiSetup'
+# 内容
 
+这一块主要围绕`init.ts`中的`initRender`进行剖析，参数合并完成之后就开始了初始化生命周期。
+
+## initRender
+
+> `initRender`位于`src/core/instance/render.ts`
+
+```ts
 export function initRender(vm: Component) {
   vm._vnode = null // the root of the child tree
   vm._staticTrees = null // v-once cached trees
@@ -101,90 +94,77 @@ export function initRender(vm: Component) {
     )
   }
 }
+```
 
-export let currentRenderingInstance: Component | null = null
+## resolveSlots
 
-// for testing only
-export function setCurrentRenderingInstance(vm: Component) {
-  currentRenderingInstance = vm
-}
+> `resolveSlots` 位于 `src/core/instance/render-helpers/resolve-slots.ts`
 
-export function renderMixin(Vue: typeof Component) {
-  // install runtime convenience helpers
-  installRenderHelpers(Vue.prototype)
-
-  Vue.prototype.$nextTick = function (fn: (...args: any[]) => any) {
-    return nextTick(fn, this)
+```ts
+**
+ * Runtime helper for resolving raw children VNodes into a slot object.
+ *
+ * 将children VNodes 转化为 slot 对象
+ */
+export function resolveSlots(
+  children: Array<VNode> | null | undefined,
+  context: Component | null
+): { [key: string]: Array<VNode> } {
+  // 如果不存在子节点直接返回空对象
+  if (!children || !children.length) {
+    return {}
   }
+  // 定义一个slots空对象，存放slot
+  const slots: Record<string, any> = {}
 
-  Vue.prototype._render = function (): VNode {
-    const vm: Component = this
-    const { render, _parentVnode } = vm.$options
-
-    if (_parentVnode && vm._isMounted) {
-      vm.$scopedSlots = normalizeScopedSlots(
-        vm.$parent!,
-        _parentVnode.data!.scopedSlots,
-        vm.$slots,
-        vm.$scopedSlots
-      )
-      if (vm._slotsProxy) {
-        syncSetupSlots(vm._slotsProxy, vm.$scopedSlots)
-      }
+  // 对子节点进行遍历
+  for (let i = 0, l = children.length; i < l; i++) {
+    const child = children[i]
+    const data = child.data
+    // remove slot attribute if the node is resolved as a Vue slot node
+    // 如果节点是slot节点的话就移除slot的属性
+    if (data && data.attrs && data.attrs.slot) {
+      // 删除该节点attrs的slot
+      delete data.attrs.slot
     }
-
-    // set parent vnode. this allows render functions to have access
-    // to the data on the placeholder node.
-    vm.$vnode = _parentVnode!
-    // render self
-    let vnode
-    try {
-      // There's no need to maintain a stack because all render fns are called
-      // separately from one another. Nested component's render fns are called
-      // when parent component is patched.
-      setCurrentInstance(vm)
-      currentRenderingInstance = vm
-      vnode = render.call(vm._renderProxy, vm.$createElement)
-    } catch (e: any) {
-      handleError(e, vm, `render`)
-      // return error render result,
-      // or previous vnode to prevent render error causing blank component
-      /* istanbul ignore else */
-      if (__DEV__ && vm.$options.renderError) {
-        try {
-          vnode = vm.$options.renderError.call(
-            vm._renderProxy,
-            vm.$createElement,
-            e
-          )
-        } catch (e: any) {
-          handleError(e, vm, `renderError`)
-          vnode = vm._vnode
-        }
+    // named slots should only be respected if the vnode was rendered in the
+    // same context.
+    // 判断是否为具名插槽
+    // https://v2.cn.vuejs.org/v2/guide/components-slots.html#%E5%85%B7%E5%90%8D%E6%8F%92%E6%A7%BD
+    if (
+      (child.context === context || child.fnContext === context) &&
+      data &&
+      data.slot != null
+    ) {
+      // 获取插槽的名字
+      const name = data.slot
+      // 插槽名字不存在则赋值为空数组
+      const slot = slots[name] || (slots[name] = [])
+      // 如果是template元素将child.children添加到数组中
+      if (child.tag === 'template') {
+        slot.push.apply(slot, child.children || [])
       } else {
-        vnode = vm._vnode
+        slot.push(child)
       }
-    } finally {
-      currentRenderingInstance = null
-      setCurrentInstance()
+    } else {
+      // 返回匿名的slot，名字是default
+      ;(slots.default || (slots.default = [])).push(child)
     }
-    // if the returned array contains only a single node, allow it
-    if (isArray(vnode) && vnode.length === 1) {
-      vnode = vnode[0]
-    }
-    // return empty vnode in case the render function errored out
-    if (!(vnode instanceof VNode)) {
-      if (__DEV__ && isArray(vnode)) {
-        warn(
-          'Multiple root nodes returned from render function. Render function ' +
-            'should return a single root node.',
-          vm
-        )
-      }
-      vnode = createEmptyVNode()
-    }
-    // set parent
-    vnode.parent = _parentVnode
-    return vnode
   }
+  // ignore slots that contains only whitespace
+  // 忽略空白内容的插槽
+  for (const name in slots) {
+    // 利用every检测指定的slots数组下的所有结果是否能够通过isWhitespace的测试
+    // 全部通过才会返回true
+    if (slots[name].every(isWhitespace)) {
+      delete slots[name]
+    }
+  }
+  return slots
 }
+
+function isWhitespace(node: VNode): boolean {
+  return (node.isComment && !node.asyncFactory) || node.text === ' '
+}
+
+```

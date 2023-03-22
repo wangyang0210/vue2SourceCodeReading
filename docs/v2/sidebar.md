@@ -8,6 +8,7 @@
   - [Vue mergeOptions](Docs/Basic/mergeOptions.md)
   - [Vue initLifecycle](Docs/Basic/initLifecycle.md)
   - [Vue initEvents](Docs/Basic/initEvents.md)
+  - [Vue initRender](Docs/Basic/initRender.md)
 
 - 扩展
 

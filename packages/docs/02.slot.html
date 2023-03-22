@@ -1,0 +1,61 @@
+<script src="../../dist/vue.js"></script>
+
+<div id="app">
+  <base-layout>
+    <template #header>
+      <h1>{{msg.headContent}}</h1>
+    </template>
+
+    <template #default>
+      <p>{{msg.default}}</p>
+    </template>
+
+    <template #footer>
+      <p>{{msg.footer}}</p>
+    </template>
+  </base-layout>
+</div>
+
+<script>
+  //   debugger
+  const { reactive, beforeCreate, created, beforeMount, mounted } = Vue
+
+  Vue.component('base-layout', {
+    template: `<template>
+  <div class="container">
+    <header>
+      <slot name="header"></slot>
+    </header>
+    <main>
+      <slot></slot>
+    </main>
+    <footer>
+      <slot name="footer"></slot>
+    </footer>
+  </div>
+</template>`
+  })
+
+  new Vue({
+    setup(props) {
+      const msg = reactive({
+        headContent: '我是头部内容',
+        footerContent: '我是尾部内容',
+        defaultContent: '我是默认内容'
+      })
+      return { msg }
+    },
+    beforeCreate() {
+      console.log('beforeCreate')
+    },
+    created() {
+      console.log('created')
+    },
+    beforeMount() {
+      console.log('beforeMount')
+    },
+    mounted() {
+      console.log('mounted')
+    }
+  }).$mount('#app')
+</script>
