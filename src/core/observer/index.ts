@@ -98,8 +98,11 @@ export class Observer {
 
 /**
  * Attempt to create an observer instance for a value,
+ * 尝试为一个值创建一个观察者实例，
  * returns the new observer if successfully observed,
+ * 如果成功观察到，则返回新的观察者，
  * or the existing observer if the value already has one.
+ * 如果该值已经有一个就返回现有的观察者
  */
 export function observe(
   value: any,
@@ -124,6 +127,8 @@ export function observe(
 
 /**
  * Define a reactive property on an Object.
+ *
+ * 利用Object.defineProperty对对象的属性值进行处理
  */
 export function defineReactive(
   obj: object,
@@ -141,6 +146,7 @@ export function defineReactive(
   }
 
   // cater for pre-defined getter/setters
+  // 满足预定义的getter/setters
   const getter = property && property.get
   const setter = property && property.set
   if (
@@ -149,13 +155,16 @@ export function defineReactive(
   ) {
     val = obj[key]
   }
-
+  // shallow为false就重新监听该值
   let childOb = !shallow && observe(val, false, mock)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
+    // 取值
     get: function reactiveGetter() {
+      // 是否存在getter，不存在就取val值
       const value = getter ? getter.call(obj) : val
+      // 判断target是否存在
       if (Dep.target) {
         if (__DEV__) {
           dep.depend({
@@ -166,8 +175,10 @@ export function defineReactive(
         } else {
           dep.depend()
         }
+
         if (childOb) {
           childOb.dep.depend()
+          // 是数组就循环遍历
           if (isArray(value)) {
             dependArray(value)
           }
@@ -175,8 +186,10 @@ export function defineReactive(
       }
       return isRef(value) && !shallow ? value.value : value
     },
+    // 赋值
     set: function reactiveSetter(newVal) {
       const value = getter ? getter.call(obj) : val
+      // 判断数据是否改变
       if (!hasChanged(value, newVal)) {
         return
       }
@@ -195,6 +208,7 @@ export function defineReactive(
         val = newVal
       }
       childOb = !shallow && observe(newVal, false, mock)
+      // 调用dep.notify()更新
       if (__DEV__) {
         dep.notify({
           type: TriggerOpTypes.SET,

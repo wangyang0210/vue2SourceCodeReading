@@ -68,6 +68,7 @@ export function initRender(vm: Component) {
       true
     )
   } else {
+    // 通过defineReactive将$attrs和$listeners设置为响应式数据 | 这一块后面再详说
     // emptyObject 返回一个被冻结的对象空对象，不能被修改其原型也不能被修改
 
     // 包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (class 和 style 除外)。
