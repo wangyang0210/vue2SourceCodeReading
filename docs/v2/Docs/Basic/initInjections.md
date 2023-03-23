@@ -1,32 +1,16 @@
-import { warn, hasSymbol, isFunction, isObject } from '../util/index'
-import { defineReactive, toggleObserving } from '../observer/index'
-import type { Component } from 'types/component'
-import { resolveProvided } from 'v3/apiInject'
+# 前言
 
-export function initProvide(vm: Component) {
-  const provideOption = vm.$options.provide
-  if (provideOption) {
-    const provided = isFunction(provideOption)
-      ? provideOption.call(vm)
-      : provideOption
-    if (!isObject(provided)) {
-      return
-    }
-    const source = resolveProvided(vm)
-    // IE9 doesn't support Object.getOwnPropertyDescriptors so we have to
-    // iterate the keys ourselves.
-    const keys = hasSymbol ? Reflect.ownKeys(provided) : Object.keys(provided)
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-      Object.defineProperty(
-        source,
-        key,
-        Object.getOwnPropertyDescriptor(provided, key)!
-      )
-    }
-  }
-}
+前面我们简单的了解了 vue 初始化时的一些大概的流程，这里我们详细的了解下具体的内容;
 
+# 内容
+
+这一块主要围绕`init.ts`中的`initInjections`进行剖析，初始化生命周期之后紧接着。
+
+## initInjections
+
+> `initInjections`的方法位于`scr/core/instance/inject.ts`中；
+
+```ts
 export function initInjections(vm: Component) {
   // 解析inject，返回解析后的对象
   const result = resolveInject(vm.$options.inject, vm)
@@ -91,3 +75,4 @@ export function resolveInject(
     return result
   }
 }
+```

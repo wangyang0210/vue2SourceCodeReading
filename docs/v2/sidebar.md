@@ -9,6 +9,7 @@
   - [Vue initLifecycle](Docs/Basic/initLifecycle.md)
   - [Vue initEvents](Docs/Basic/initEvents.md)
   - [Vue initRender](Docs/Basic/initRender.md)
+  - [Vue initInjections](Docs/Basic/initInjections.md)
 
 - 扩展
 
