@@ -10,6 +10,7 @@
   - [Vue initEvents](Docs/Basic/initEvents.md)
   - [Vue initRender](Docs/Basic/initRender.md)
   - [Vue initInjections](Docs/Basic/initInjections.md)
+  - [Vue initState](Docs/Basic/initState.md)
 
 - 扩展
 
