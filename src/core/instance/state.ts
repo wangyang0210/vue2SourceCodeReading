@@ -40,9 +40,11 @@ const sharedPropertyDefinition = {
 }
 
 export function proxy(target: Object, sourceKey: string, key: string) {
+  // get方法
   sharedPropertyDefinition.get = function proxyGetter() {
     return this[sourceKey][key]
   }
+  // set方法
   sharedPropertyDefinition.set = function proxySetter(val) {
     this[sourceKey][key] = val
   }
@@ -55,7 +57,7 @@ export function initState(vm: Component) {
   if (opts.props) initProps(vm, opts.props)
 
   // Composition API
-  // 组合式API
+  // 初始化组合式API
   initSetup(vm)
   // 存在方法则初始化方法
   if (opts.methods) initMethods(vm, opts.methods)
@@ -79,18 +81,23 @@ function initProps(vm: Component, propsOptions: Object) {
   const props = (vm._props = shallowReactive({}))
   // cache prop keys so that future props updates can iterate using Array
   // instead of dynamic object key enumeration.
+  // 缓存prop的keys以便将来更新props时可以使用数组代替动态的迭代对象key
   const keys: string[] = (vm.$options._propKeys = [])
+  // 判断是否是根组件
   const isRoot = !vm.$parent
   // root instance props should be converted
   if (!isRoot) {
+    // 如果不是根组件就关闭响应式处理,防止defineReactive做响应式处理
     toggleObserving(false)
   }
   for (const key in propsOptions) {
     keys.push(key)
+    // 对prop数据进行校验
     const value = validateProp(key, propsOptions, propsData, vm)
     /* istanbul ignore else */
     if (__DEV__) {
       const hyphenatedKey = hyphenate(key)
+      // 检查属性是否是保留属性
       if (
         isReservedAttribute(hyphenatedKey) ||
         config.isReservedAttr(hyphenatedKey)
@@ -117,10 +124,12 @@ function initProps(vm: Component, propsOptions: Object) {
     // static props are already proxied on the component's prototype
     // during Vue.extend(). We only need to proxy props defined at
     // instantiation here.
+    // 在Vue.extend（）过程中，静态props已经在组件的原型上被代理。我们只需要在这里实例化时代理定义的props。
     if (!(key in vm)) {
       proxy(vm, `_props`, key)
     }
   }
+  // 开启响应式处理
   toggleObserving(true)
 }
 
@@ -130,6 +139,7 @@ function initProps(vm: Component, propsOptions: Object) {
  */
 function initData(vm: Component) {
   let data: any = vm.$options.data
+  // 通过getData将函数转为对象
   data = vm._data = isFunction(data) ? getData(data, vm) : data || {}
   if (!isPlainObject(data)) {
     data = {}
@@ -150,11 +160,13 @@ function initData(vm: Component) {
   let i = keys.length
   while (i--) {
     const key = keys[i]
+    // 检查key名是否在methods中已经使用
     if (__DEV__) {
       if (methods && hasOwn(methods, key)) {
         warn(`Method "${key}" has already been defined as a data property.`, vm)
       }
     }
+    // 检查key名是否在props中使用
     if (props && hasOwn(props, key)) {
       __DEV__ &&
         warn(
@@ -162,16 +174,18 @@ function initData(vm: Component) {
             `Use prop default value instead.`,
           vm
         )
+      // 检查key名是否符合规范,即不以$和_开头
     } else if (!isReserved(key)) {
+      // 代理数据 |本质上还是 Object.defineProperty
       proxy(vm, `_data`, key)
     }
   }
-  // observe data
+  // observe data | 响应式数据
   const ob = observe(data)
   ob && ob.vmCount++
 }
 /**
- * 获取data内容
+ * 获取data内容|转为对象
  * @param data
  * @param vm
  * @returns
@@ -193,8 +207,11 @@ const computedWatcherOptions = { lazy: true }
 
 function initComputed(vm: Component, computed: Object) {
   // $flow-disable-line
+  // 创建一个空对象
   const watchers = (vm._computedWatchers = Object.create(null))
   // computed properties are just getters during SSR
+  // 计算的内容只是SSR期间的getter
+  // 是否服务端渲染
   const isSSR = isServerRendering()
 
   for (const key in computed) {
@@ -206,6 +223,8 @@ function initComputed(vm: Component, computed: Object) {
 
     if (!isSSR) {
       // create internal watcher for the computed property.
+      // 不是服务端渲染,就为计算属性创建内部观察程序。
+      // noop 空函数：function() {}
       watchers[key] = new Watcher(
         vm,
         getter || noop,
@@ -217,9 +236,11 @@ function initComputed(vm: Component, computed: Object) {
     // component-defined computed properties are already defined on the
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
+    // 组件定义的计算内容已经在组件原型上定义。我们只需要在这里定义实例化时定义的计算内容。
     if (!(key in vm)) {
       defineComputed(vm, key, userDef)
     } else if (__DEV__) {
+      // 开发环境下检查key名是否被过早的定义在data,props,methods中
       if (key in vm.$data) {
         warn(`The computed property "${key}" is already defined in data.`, vm)
       } else if (vm.$options.props && key in vm.$options.props) {
@@ -239,7 +260,9 @@ export function defineComputed(
   key: string,
   userDef: Record<string, any> | (() => any)
 ) {
+  // 是否服务端渲染
   const shouldCache = !isServerRendering()
+  // 定义get和set
   if (isFunction(userDef)) {
     sharedPropertyDefinition.get = shouldCache
       ? createComputedGetter(key)
@@ -268,8 +291,9 @@ function createComputedGetter(key) {
   return function computedGetter() {
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
+      // 是否被计算过,如果dirty为true表明未被计算过
       if (watcher.dirty) {
-        watcher.evaluate()
+        watcher.evaluate() // 调用watcher.get方法,值会保存在watcher.value上
       }
       if (Dep.target) {
         if (__DEV__ && Dep.target.onTrack) {
@@ -295,8 +319,10 @@ function createGetterInvoker(fn) {
 
 function initMethods(vm: Component, methods: Object) {
   const props = vm.$options.props
+  // 循环遍历methods
   for (const key in methods) {
     if (__DEV__) {
+      // 不是函数类型发出警告
       if (typeof methods[key] !== 'function') {
         warn(
           `Method "${key}" has type "${typeof methods[
@@ -306,9 +332,11 @@ function initMethods(vm: Component, methods: Object) {
           vm
         )
       }
+      // 函数名称和props中的是否冲突
       if (props && hasOwn(props, key)) {
         warn(`Method "${key}" has already been defined as a prop.`, vm)
       }
+      // 函数名不能以_和$开头
       if (key in vm && isReserved(key)) {
         warn(
           `Method "${key}" conflicts with an existing Vue instance method. ` +
@@ -316,18 +344,23 @@ function initMethods(vm: Component, methods: Object) {
         )
       }
     }
+    // 将methods绑定在当前实例上
     vm[key] = typeof methods[key] !== 'function' ? noop : bind(methods[key], vm)
   }
 }
 
 function initWatch(vm: Component, watch: Object) {
+  // 遍历watch
   for (const key in watch) {
     const handler = watch[key]
+    // 是否是数组
     if (isArray(handler)) {
+      // 循环创建watcher监听回调函数
       for (let i = 0; i < handler.length; i++) {
         createWatcher(vm, key, handler[i])
       }
     } else {
+      // 创建watcher监听回调函数
       createWatcher(vm, key, handler)
     }
   }
@@ -339,13 +372,19 @@ function createWatcher(
   handler: any,
   options?: Object
 ) {
+  // 检查是否是普通对象
   if (isPlainObject(handler)) {
+    // 将handler挂载到options属性上
     options = handler
+    // 提取handler属性赋值给handler
     handler = handler.handler
   }
+  // 是否是字符串
   if (typeof handler === 'string') {
+    // 从实例中找到handler赋值给handler
     handler = vm[handler]
   }
+  // 实例上的$watch方法
   return vm.$watch(expOrFn, handler, options)
 }
 

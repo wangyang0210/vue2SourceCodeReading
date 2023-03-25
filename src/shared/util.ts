@@ -141,6 +141,7 @@ export const isBuiltInTag = makeMap('slot,component', true)
 
 /**
  * Check if an attribute is a reserved attribute.
+ * 检查属性是否为保留属性
  */
 export const isReservedAttribute = makeMap('key,ref,slot,slot-scope,is')
 
@@ -203,6 +204,7 @@ export const capitalize = cached((str: string): string => {
 
 /**
  * Hyphenate a camelCase string.
+ * 具有缓存性值的函数会将驼峰写法转为-连字符: 如abC => ab-c
  */
 const hyphenateRE = /\B([A-Z])/g
 export const hyphenate = cached((str: string): string => {
