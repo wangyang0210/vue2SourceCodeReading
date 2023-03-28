@@ -4,7 +4,7 @@
 
 # 内容
 
-这一块主要围绕`init.ts`中的`initState`进行剖析，初始化生命周期之后紧接着。
+这一块主要围绕`init.ts`中的`initState`进行剖析。
 
 ## initState
 

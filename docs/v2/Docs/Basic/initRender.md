@@ -4,7 +4,7 @@
 
 # 内容
 
-这一块主要围绕`init.ts`中的`initRender`进行剖析，参数合并完成之后就开始了初始化生命周期。
+这一块主要围绕`init.ts`中的`initRender`进行剖析。
 
 ## initRender
 
