@@ -11,6 +11,7 @@
   - [Vue initRender](Docs/Basic/initRender.md)
   - [Vue initInjections](Docs/Basic/initInjections.md)
   - [Vue initState](Docs/Basic/initState.md)
+  - [Vue initProvide](Docs/Basic/initProvide.md)
 
 - 扩展
 
