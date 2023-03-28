@@ -89,7 +89,7 @@ export function initMixin(Vue: typeof Component) {
     // https://v2.cn.vuejs.org/v2/api/#provide-inject
     // provide 父组件提供的数据
     // inject 子组件进行注入后直接使用
-    // 在data/props后进行provide
+    // 在data/props后进行provide | 为了便于访问data/prop
     initProvide(vm) // resolve provide after data/props
     // 调用生命周期钩子函数 | created
     callHook(vm, 'created')

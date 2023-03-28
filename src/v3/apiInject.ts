@@ -21,8 +21,14 @@ export function resolveProvided(vm: Component): Record<string, any> {
   // own provides object using parent provides object as prototype.
   // this way in `inject` we can simply look up injections from direct
   // parent and let the prototype chain do the work.
+  // 默认情况下，实例继承其父级的provides对象，
+  // 但当它需要提供自己的值时，
+  // 它会使用父级provides对象作为原型创建自己的provide对象。
+  // 通过这种方式，在“inject”中，我们可以简单地从直接父级查找注入，并让原型链来完成工作。
   const existing = vm._provided
   const parentProvides = vm.$parent && vm.$parent._provided
+  // 如果父级上的_provided和实例上的_provided一致，就将父级上的parentProvides赋给实例上的_provided
+  // 否则直接返回实例上的属性
   if (parentProvides === existing) {
     return (vm._provided = Object.create(parentProvides))
   } else {

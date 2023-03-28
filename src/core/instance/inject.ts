@@ -6,22 +6,28 @@ import { resolveProvided } from 'v3/apiInject'
 export function initProvide(vm: Component) {
   const provideOption = vm.$options.provide
   if (provideOption) {
+    // 获取provided的对象
     const provided = isFunction(provideOption)
       ? provideOption.call(vm)
       : provideOption
+
+    // 如过不是object对象且为null直接返回
     if (!isObject(provided)) {
       return
     }
+    // 解析provide
     const source = resolveProvided(vm)
     // IE9 doesn't support Object.getOwnPropertyDescriptors so we have to
     // iterate the keys ourselves.
+
     const keys = hasSymbol ? Reflect.ownKeys(provided) : Object.keys(provided)
+    // IE9不支持Object.getOwnPropertyDescriptors所以这里必须自己去迭代keys
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i]
       Object.defineProperty(
         source,
         key,
-        Object.getOwnPropertyDescriptor(provided, key)!
+        Object.getOwnPropertyDescriptor(provided, key)! // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptor
       )
     }
   }
