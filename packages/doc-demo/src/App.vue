@@ -2,7 +2,7 @@
 import HelloWorld from './components/HelloWorld.vue'
 
 // eslint-disable-next-line no-debugger
-debugger
+// debugger
 </script>
 
 <template>

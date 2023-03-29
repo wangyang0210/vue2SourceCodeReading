@@ -3,7 +3,7 @@ defineProps<{
   msg: string
 }>()
 // eslint-disable-next-line no-debugger
-debugger
+// debugger
 </script>
 
 <template>

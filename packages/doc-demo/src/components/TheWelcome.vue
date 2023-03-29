@@ -5,6 +5,9 @@ import ToolingIcon from './icons/IconTooling.vue'
 import EcosystemIcon from './icons/IconEcosystem.vue'
 import CommunityIcon from './icons/IconCommunity.vue'
 import SupportIcon from './icons/IconSupport.vue'
+
+// eslint-disable-next-line no-debugger
+debugger
 </script>
 
 <template>
