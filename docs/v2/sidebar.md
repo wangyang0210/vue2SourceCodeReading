@@ -16,4 +16,5 @@
 
 - 扩展
 
-  - [Vue Error](Docs/Basic/errorHandler.md)
+  - [Vue Error](Docs/expand/errorHandler.md)
+  - [Vue patch](Docs/expand/patch.md)
