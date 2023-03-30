@@ -37,6 +37,7 @@ Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  // 浏览器环境下如果存在el，则调用query方法进查询
   el = el && inBrowser ? query(el) : undefined
   return mountComponent(this, el, hydrating)
 }

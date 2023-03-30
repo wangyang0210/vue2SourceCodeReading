@@ -24,8 +24,11 @@ export let activeInstance: any = null
 export let isUpdatingChildComponent: boolean = false
 
 export function setActiveInstance(vm: Component) {
+  // 保存上一个激活对象
   const prevActiveInstance = activeInstance
+  // 将当前实例设置为激活对象
   activeInstance = vm
+  // 返回函数
   return () => {
     activeInstance = prevActiveInstance
   }
@@ -80,28 +83,37 @@ export function initLifecycle(vm: Component) {
 export function lifecycleMixin(Vue: typeof Component) {
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
+    // 挂载点真实dom
     const prevEl = vm.$el
+    // 老的虚拟dom
     const prevVnode = vm._vnode
+    // 设置激活的组件实例对象 | 缓存当前实例,为了处理 keep-alive情况
     const restoreActiveInstance = setActiveInstance(vm)
+    // 新的虚拟dom
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
+    // Vue.prototype.__patch__是基于所使用的渲染后端在入口点中注入的
+    // __patch__打补丁这里涉及到就是diff算法了
     if (!prevVnode) {
-      // initial render
+      // initial render | 首次渲染
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
-      // updates
+      // updates | 更新
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
     restoreActiveInstance()
     // update __vue__ reference
+    // 存在真实的dom节点就重置__vue__再挂载新的
     if (prevEl) {
       prevEl.__vue__ = null
     }
+    // 将更新后的vue实例挂载到vm.$el.__vue__缓存
     if (vm.$el) {
       vm.$el.__vue__ = vm
     }
     // if parent is an HOC, update its $el as well
+    // 如果当前实例的$vnode与父组件的_vnode相同，也要更新其$el
     let wrapper: Component | undefined = vm
     while (
       wrapper &&
@@ -114,6 +126,7 @@ export function lifecycleMixin(Vue: typeof Component) {
     }
     // updated hook is called by the scheduler to ensure that children are
     // updated in a parent's updated hook.
+    // 调度程序调用updated hook，以确保子级在父级的更新hook中得到更新。
   }
 
   Vue.prototype.$forceUpdate = function () {
@@ -167,10 +180,14 @@ export function mountComponent(
   el: Element | null | undefined,
   hydrating?: boolean
 ): Component {
+  // 挂载点赋值给实例上的$el
   vm.$el = el
+  // 如果$options不存在render就创建一个空的虚拟的dom赋予render
   if (!vm.$options.render) {
     // @ts-expect-error invalid type
     vm.$options.render = createEmptyVNode
+    // 开发环境下，如果存在配置模板或者el属性会发出警告
+    // 需要将模板预编译为渲染函数或者使用包含编译器的版本
     if (__DEV__) {
       /* istanbul ignore if */
       if (
@@ -192,9 +209,11 @@ export function mountComponent(
       }
     }
   }
+  // 调用生命周期钩子函数beforeMount
   callHook(vm, 'beforeMount')
 
   let updateComponent
+  // 开发环境性能分析相关代码
   /* istanbul ignore if */
   if (__DEV__ && config.performance && mark) {
     updateComponent = () => {
@@ -214,11 +233,13 @@ export function mountComponent(
       measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
+    // 定义updateComponent调用_update方法对比更新vnode
     updateComponent = () => {
       vm._update(vm._render(), hydrating)
     }
   }
 
+  // watcher选项
   const watcherOptions: WatcherOptions = {
     before() {
       if (vm._isMounted && !vm._isDestroyed) {
@@ -235,6 +256,9 @@ export function mountComponent(
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
+  // 我们将其设置为vm._watcher在watcher的构造函数中，
+  // 因为观察程序的初始补丁可能会调用$forceUpdate（例如，在子组件的挂载钩子中），
+  // 这依赖于已定义的 vm__watcher
   new Watcher(
     vm,
     updateComponent,
@@ -245,6 +269,7 @@ export function mountComponent(
   hydrating = false
 
   // flush buffer for flush: "pre" watchers queued in setup()
+  // setup中定义的预执行的 watcher,调用 watcher.run方法执行一次
   const preWatchers = vm._preWatchers
   if (preWatchers) {
     for (let i = 0; i < preWatchers.length; i++) {
@@ -254,10 +279,13 @@ export function mountComponent(
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
+
+  // 手动挂载实例，并且在首次挂载（$vnode为空）时去触发 mounted钩子
   if (vm.$vnode == null) {
     vm._isMounted = true
     callHook(vm, 'mounted')
   }
+  // 返回组件实例对象
   return vm
 }
 
