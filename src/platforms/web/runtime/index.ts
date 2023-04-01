@@ -30,6 +30,7 @@ extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
+// 判断是否是浏览器环境，是就赋予patch否则就赋予空函数
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
