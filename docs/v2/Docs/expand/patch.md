@@ -145,3 +145,11 @@ export function setStyleScope(node: Element, scopeId: string) {
   node.setAttribute(scopeId, '')
 }
 ```
+
+### modules
+
+> 主要是内置的一些模块方法，如：`attrs` `klass`，`events`，`domProps`，`style`，`transition`，`ref`，`directives`
+
+### createPatchFunction
+
+> `createPatchFunction` 这块代码有点长...
