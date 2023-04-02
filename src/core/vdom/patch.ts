@@ -69,6 +69,10 @@ export function createPatchFunction(backend) {
 
   const { modules, nodeOps } = backend
 
+  // hooks  ['create', 'activate', 'update', 'remove', 'destroy']
+  // modules  [attrs, klass, events, domProps, style, transition, ref, directives]
+  // 遍历hooks钩子并在modules中判断是否存在对应的方法
+  // 存在就push到cbs中
   for (i = 0; i < hooks.length; ++i) {
     cbs[hooks[i]] = []
     for (j = 0; j < modules.length; ++j) {
@@ -78,10 +82,14 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 创建一个vnode节点
+  // 获取传入元素的标签名并创建对应虚拟DOM
   function emptyNodeAt(elm) {
     return new VNode(nodeOps.tagName(elm).toLowerCase(), {}, [], undefined, elm)
   }
 
+  // 创建remove函数
+  // 要移除某个节点先把监听器全部移除
   function createRmCb(childElm, listeners) {
     function remove() {
       if (--remove.listeners === 0) {
@@ -92,14 +100,18 @@ export function createPatchFunction(backend) {
     return remove
   }
 
+  // 移除节点
   function removeNode(el) {
     const parent = nodeOps.parentNode(el)
     // element may have already been removed due to v-html / v-text
+    // 元素可能已经由于v-html/v-text被删除
     if (isDef(parent)) {
       nodeOps.removeChild(parent, el)
     }
   }
-
+  // 是否是未知的元素标签
+  // 如果自定元素存在ignoredElementse就返回false不使用isUnknownElement进行校验
+  // https://v2.cn.vuejs.org/v2/api/#ignoredElements
   function isUnknownElement(vnode, inVPre) {
     return (
       !inVPre &&
@@ -118,6 +130,7 @@ export function createPatchFunction(backend) {
 
   let creatingElmInVPre = 0
 
+  // 创建元素
   function createElm(
     vnode,
     insertedVnodeQueue,
@@ -184,6 +197,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 创建组件
   function createComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
     let i = vnode.data
     if (isDef(i)) {
@@ -206,6 +220,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 初始化组件
   function initComponent(vnode, insertedVnodeQueue) {
     if (isDef(vnode.data.pendingInsert)) {
       insertedVnodeQueue.push.apply(
@@ -227,6 +242,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 激活组件 | 针对keep-alive包裹的组件
   function reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
     let i
     // hack for #4339: a reactivated component with inner transition
@@ -249,6 +265,7 @@ export function createPatchFunction(backend) {
     insert(parentElm, vnode.elm, refElm)
   }
 
+  // 向父节点插入节点
   function insert(parent, elm, ref) {
     if (isDef(parent)) {
       if (isDef(ref)) {
@@ -261,6 +278,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 创建子节点
   function createChildren(vnode, children, insertedVnodeQueue) {
     if (isArray(children)) {
       if (__DEV__) {
@@ -289,6 +307,7 @@ export function createPatchFunction(backend) {
     return isDef(vnode.tag)
   }
 
+  // 执行所有传入节点下的create方法
   function invokeCreateHooks(vnode, insertedVnodeQueue) {
     for (let i = 0; i < cbs.create.length; ++i) {
       cbs.create[i](emptyNode, vnode)
