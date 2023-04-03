@@ -322,6 +322,8 @@ export function createPatchFunction(backend) {
   // set scope id attribute for scoped CSS.
   // this is implemented as a special case to avoid the overhead
   // of going through the normal attribute patching process.
+  // 设置SS的作用域id属性。
+  // 这是作为一种特殊情况来实现的，以避免经过正常属性修补过程的开销。
   function setScope(vnode) {
     let i
     if (isDef((i = vnode.fnScopeId))) {
@@ -346,6 +348,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 在指定索引范围内添加节点
   function addVnodes(
     parentElm,
     refElm,
@@ -367,6 +370,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 销毁节点，其实就是执行destroy钩子方法
   function invokeDestroyHook(vnode) {
     let i, j
     const data = vnode.data
@@ -374,6 +378,7 @@ export function createPatchFunction(backend) {
       if (isDef((i = data.hook)) && isDef((i = i.destroy))) i(vnode)
       for (i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode)
     }
+    // 存在子节点就递归调用invokeDestroyHook
     if (isDef((i = vnode.children))) {
       for (j = 0; j < vnode.children.length; ++j) {
         invokeDestroyHook(vnode.children[j])
@@ -381,6 +386,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 移除指定索引范围内的节点
   function removeVnodes(vnodes, startIdx, endIdx) {
     for (; startIdx <= endIdx; ++startIdx) {
       const ch = vnodes[startIdx]
@@ -396,6 +402,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 移除并调用remove的钩子方法
   function removeAndInvokeRemoveHook(vnode, rm?: any) {
     if (isDef(rm) || isDef(vnode.data)) {
       let i
@@ -429,6 +436,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 更新子节点 | 重要！
   function updateChildren(
     parentElm,
     oldCh,
