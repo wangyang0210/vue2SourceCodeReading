@@ -196,18 +196,24 @@ export function createPatchFunction(backend) {
 
       // 创建子节点
       createChildren(vnode, children, insertedVnodeQueue)
+
       if (isDef(data)) {
+        // 调用create钩子
         invokeCreateHooks(vnode, insertedVnodeQueue)
       }
+
+      // 插入父元素
       insert(parentElm, vnode.elm, refElm)
 
       if (__DEV__ && data && data.pre) {
         creatingElmInVPre--
       }
     } else if (isTrue(vnode.isComment)) {
+      // 创建注释节点
       vnode.elm = nodeOps.createComment(vnode.text)
       insert(parentElm, vnode.elm, refElm)
     } else {
+      // 创建文本节点
       vnode.elm = nodeOps.createTextNode(vnode.text)
       insert(parentElm, vnode.elm, refElm)
     }
