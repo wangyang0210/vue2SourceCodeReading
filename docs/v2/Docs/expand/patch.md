@@ -152,4 +152,4 @@ export function setStyleScope(node: Element, scopeId: string) {
 
 ### createPatchFunction
 
-> `createPatchFunction` 这块代码有点长...
+> `createPatchFunction` 这块代码有点长，因为有很多封装的函数方法
