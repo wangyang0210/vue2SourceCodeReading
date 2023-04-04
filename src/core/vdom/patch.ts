@@ -327,6 +327,7 @@ export function createPatchFunction(backend) {
         checkDuplicateKeys(children)
       }
       for (let i = 0; i < children.length; ++i) {
+        // 子节点是数组话就遍历调用createElm
         createElm(
           children[i],
           insertedVnodeQueue,
@@ -338,6 +339,7 @@ export function createPatchFunction(backend) {
         )
       }
     } else if (isPrimitive(vnode.text)) {
+      // 文本节点是直接追加
       nodeOps.appendChild(vnode.elm, nodeOps.createTextNode(String(vnode.text)))
     }
   }

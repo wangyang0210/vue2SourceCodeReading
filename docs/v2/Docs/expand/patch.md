@@ -152,4 +152,63 @@ export function setStyleScope(node: Element, scopeId: string) {
 
 ### createPatchFunction
 
-> `createPatchFunction` 这块代码有点长，因为有很多封装的函数方法
+> `createPatchFunction` 中包含了`emptyNodeAt`,`createRmCb`,`removeNode`, `isUnknownElement`, `createElm`, `createComponent`, `initComponent`, `reactivateComponent`, `insert`, `createChildren`, `isPatchable`, `invokeCreateHooks`, `setScope`, `addVnodes`, `invokeDestroyHook`, `removeVnodes`, `removeAndInvokeRemoveHook`, `updateChildren`, `checkDuplicateKeys`, `findIdxInOld`, `patchVnode`, `invokeInsertHook`, `isRenderedModule`, `hydrate`, `assertNodeMatch`, `patch`共 26 个函数；
+
+#### 钩子遍历
+
+```ts
+// hooks  ['create', 'activate', 'update', 'remove', 'destroy']
+// modules  [attrs, klass, events, domProps, style, transition, ref, directives]
+// 遍历hooks钩子并在modules中判断是否存在对应的方法
+// 存在就push到cbs中
+for (i = 0; i < hooks.length; ++i) {
+  cbs[hooks[i]] = []
+  for (j = 0; j < modules.length; ++j) {
+    if (isDef(modules[j][hooks[i]])) {
+      cbs[hooks[i]].push(modules[j][hooks[i]])
+    }
+  }
+}
+```
+
+#### emptyNodeAt
+
+```ts
+// 创建一个vnode节点
+// 获取传入元素的小写标签名并创建对应空的虚拟DOM
+function emptyNodeAt(elm) {
+  return new VNode(nodeOps.tagName(elm).toLowerCase(), {}, [], undefined, elm)
+}
+```
+
+### createRmCb
+
+```ts
+// 创建remove函数
+// 要移除某个节点需先把监听器全部移除
+function createRmCb(childElm, listeners) {
+  function remove() {
+    if (--remove.listeners === 0) {
+      removeNode(childElm)
+    }
+  }
+  remove.listeners = listeners
+  return remove
+}
+```
+
+### removeNode
+
+```ts
+// 移除节点
+function removeNode(el) {
+  // 找到指定节点的父节点
+  const parent = nodeOps.parentNode(el)
+  // element may have already been removed due to v-html / v-text
+  // 元素可能已经由于v-html/v-text被删除
+  // 父节点存在则移除父节点的下该节点
+  if (isDef(parent)) {
+    nodeOps.removeChild(parent, el)
+  }
+}
+```
