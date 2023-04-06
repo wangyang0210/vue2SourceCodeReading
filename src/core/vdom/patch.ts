@@ -291,19 +291,25 @@ export function createPatchFunction(backend) {
     // does not trigger because the inner node's created hooks are not called
     // again. It's not ideal to involve module-specific logic in here but
     // there doesn't seem to be a better way to do it.
+    // #4339的破解：具有内部转换的重新激活组件不会触发，
+    // 因为内部节点创建的钩子不会被再次调用。
+    // 在这里涉及特定于模块的逻辑并不理想，但似乎没有更好的方法。
     let innerNode = vnode
     while (innerNode.componentInstance) {
       innerNode = innerNode.componentInstance._vnode
+      // 调用activate钩子方法
       if (isDef((i = innerNode.data)) && isDef((i = i.transition))) {
         for (i = 0; i < cbs.activate.length; ++i) {
           cbs.activate[i](emptyNode, innerNode)
         }
+        // 将节点推入队列
         insertedVnodeQueue.push(innerNode)
         break
       }
     }
     // unlike a newly created component,
     // a reactivated keep-alive component doesn't insert itself
+    // 不同于新创建的组件， 重新激活的keep-alive组件不会插入自身
     insert(parentElm, vnode.elm, refElm)
   }
 

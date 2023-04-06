@@ -212,3 +212,264 @@ function removeNode(el) {
   }
 }
 ```
+
+### isUnknownElement
+
+```ts
+// 是否是未知的元素标签
+// 如果自定元素存在ignoredElementse就返回false不使用isUnknownElement进行校验
+// https://v2.cn.vuejs.org/v2/api/#ignoredElements
+function isUnknownElement(vnode, inVPre) {
+  return (
+    !inVPre &&
+    !vnode.ns &&
+    !(
+      config.ignoredElements.length &&
+      config.ignoredElements.some(ignore => {
+        return isRegExp(ignore) ? ignore.test(vnode.tag) : ignore === vnode.tag
+      })
+    ) &&
+    config.isUnknownElement(vnode.tag)
+  )
+}
+```
+
+### createElm
+
+```ts
+// 创建元素
+function createElm(
+  vnode,
+  insertedVnodeQueue,
+  parentElm?: any,
+  refElm?: any,
+  nested?: any,
+  ownerArray?: any,
+  index?: any
+) {
+  // 节点已经被渲染，克隆节点
+  if (isDef(vnode.elm) && isDef(ownerArray)) {
+    // This vnode was used in a previous render!
+    // now it's used as a new node, overwriting its elm would cause
+    // potential patch errors down the road when it's used as an insertion
+    // reference node. Instead, we clone the node on-demand before creating
+    // associated DOM element for it.
+    // 此vnode已在以前的渲染中使用！
+    // 现在它被用作一个新节点，当它被用作插入参考节点时，覆盖它的elm将导致潜在的补丁错误。
+    // 相反，我们在为节点创建关联的DOM元素之前按需克隆节点。
+    vnode = ownerArray[index] = cloneVNode(vnode)
+  }
+
+  vnode.isRootInsert = !nested // for transition enter check
+  // 创建组件
+  if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
+    // 如果是创建组件节点且成功创建，createComponent返回 true。createElm直接return。
+    return
+  }
+
+  const data = vnode.data
+  const children = vnode.children
+  const tag = vnode.tag
+  if (isDef(tag)) {
+    // 存在tag的情况
+
+    // 开发环境下会对tag进行校验
+    if (__DEV__) {
+      // 跳过这个元素和它的子元素的编译过程。可以用来显示原始 Mustache 标签。跳过大量没有指令的节点会加快编译。
+      // https://v2.cn.vuejs.org/v2/api/#v-pre
+      if (data && data.pre) {
+        // 节点上存在pre属性就对creatingElmInVPre标识进行+1操作
+        creatingElmInVPre++
+      }
+      if (isUnknownElement(vnode, creatingElmInVPre)) {
+        warn(
+          'Unknown custom element: <' +
+            tag +
+            '> - did you ' +
+            'register the component correctly? For recursive components, ' +
+            'make sure to provide the "name" option.',
+          vnode.context
+        )
+      }
+    }
+
+    // 通过传入节点的tag，创建相应的标签元素，赋值给 vnode.elm 进行占位
+    // 如果存在命名空间就调用createElementNS创建带有命名空间元素否则就调用createElement创建正常元素
+    vnode.elm = vnode.ns
+      ? nodeOps.createElementNS(vnode.ns, tag)
+      : nodeOps.createElement(tag, vnode)
+    // 设置CSS作用域
+    setScope(vnode)
+
+    // 创建子节点
+    createChildren(vnode, children, insertedVnodeQueue)
+
+    if (isDef(data)) {
+      // 调用create钩子
+      invokeCreateHooks(vnode, insertedVnodeQueue)
+    }
+
+    // 插入父元素
+    insert(parentElm, vnode.elm, refElm)
+
+    if (__DEV__ && data && data.pre) {
+      creatingElmInVPre--
+    }
+  } else if (isTrue(vnode.isComment)) {
+    // 创建注释节点
+    vnode.elm = nodeOps.createComment(vnode.text)
+    insert(parentElm, vnode.elm, refElm)
+  } else {
+    // 创建文本节点
+    vnode.elm = nodeOps.createTextNode(vnode.text)
+    insert(parentElm, vnode.elm, refElm)
+  }
+}
+```
+
+### createComponent
+
+```ts
+// 创建组件
+function createComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
+  let i = vnode.data
+  if (isDef(i)) {
+    // vnode.data存在
+
+    // 存在组件实例且为keep-alive组件
+    const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+    // 子组件调用init执行初始化，创建子组件实例进行子组件挂载
+    if (isDef((i = i.hook)) && isDef((i = i.init))) {
+      i(vnode, false /* hydrating */)
+    }
+    // after calling the init hook, if the vnode is a child component
+    // it should've created a child instance and mounted it. the child
+    // component also has set the placeholder vnode's elm.
+    // in that case we can just return the element and be done.
+    //在调用init钩子之后，如果vnode是一个子组件，它应该创建一个子实例并挂载它。该子组件还设置了占位符vnode的elm。
+    //在这种情况下，我们可以返回元素并完成。
+
+    if (isDef(vnode.componentInstance)) {
+      initComponent(vnode, insertedVnodeQueue)
+      // 将子组件节点插入父元素中
+      insert(parentElm, vnode.elm, refElm)
+      if (isTrue(isReactivated)) {
+        // 如果是keep-alive组件则激活组件
+        reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm)
+      }
+      return true
+    }
+  }
+}
+```
+
+### initComponent
+
+```ts
+// 初始化组件
+function initComponent(vnode, insertedVnodeQueue) {
+  // 存在pendingInsert就插入vnode队列中
+  if (isDef(vnode.data.pendingInsert)) {
+    insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert)
+    vnode.data.pendingInsert = null
+  }
+
+  //赋予vnode.elm进行占位
+  vnode.elm = vnode.componentInstance.$el
+
+  if (isPatchable(vnode)) {
+    // 触发create钩子
+    invokeCreateHooks(vnode, insertedVnodeQueue)
+    // 设置CSS作用域
+    setScope(vnode)
+  } else {
+    // empty component root.
+    // 空的根组件
+    // skip all element-related modules except for ref (#3455)
+    // 跳过除ref之外的所有与元素相关的模块
+
+    // 注册ref
+    registerRef(vnode)
+    // make sure to invoke the insert hook
+    // 确保调用了insert钩子
+    insertedVnodeQueue.push(vnode)
+  }
+}
+```
+
+### reactivateComponent
+
+```ts
+// 激活组件 | 针对keep-alive组件
+function reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
+  let i
+  // hack for #4339: a reactivated component with inner transition
+  // does not trigger because the inner node's created hooks are not called
+  // again. It's not ideal to involve module-specific logic in here but
+  // there doesn't seem to be a better way to do it.
+  // #4339的破解：具有内部转换的重新激活组件不会触发，
+  // 因为内部节点创建的钩子不会被再次调用。
+  // 在这里涉及特定于模块的逻辑并不理想，但似乎没有更好的方法。
+  let innerNode = vnode
+  while (innerNode.componentInstance) {
+    innerNode = innerNode.componentInstance._vnode
+    // 调用activate钩子方法
+    if (isDef((i = innerNode.data)) && isDef((i = i.transition))) {
+      for (i = 0; i < cbs.activate.length; ++i) {
+        cbs.activate[i](emptyNode, innerNode)
+      }
+      // 将节点推入队列
+      insertedVnodeQueue.push(innerNode)
+      break
+    }
+  }
+  // unlike a newly created component,
+  // a reactivated keep-alive component doesn't insert itself
+  // 不同于新创建的组件， 重新激活的keep-alive组件不会插入自身
+  insert(parentElm, vnode.elm, refElm)
+}
+```
+
+### insert
+
+```ts
+function insert(parent, elm, ref) {
+  if (isDef(parent)) {
+    if (isDef(ref)) {
+      if (nodeOps.parentNode(ref) === parent) {
+        nodeOps.insertBefore(parent, elm, ref)
+      }
+    } else {
+      nodeOps.appendChild(parent, elm)
+    }
+  }
+}
+```
+
+### createChildren
+
+```ts
+// 创建子节点
+function createChildren(vnode, children, insertedVnodeQueue) {
+  if (isArray(children)) {
+    if (__DEV__) {
+      checkDuplicateKeys(children)
+    }
+    for (let i = 0; i < children.length; ++i) {
+      // 子节点是数组话就遍历调用createElm
+      createElm(
+        children[i],
+        insertedVnodeQueue,
+        vnode.elm,
+        null,
+        true,
+        children,
+        i
+      )
+    }
+  } else if (isPrimitive(vnode.text)) {
+    // 文本节点是直接追加
+    nodeOps.appendChild(vnode.elm, nodeOps.createTextNode(String(vnode.text)))
+  }
+}
+```
