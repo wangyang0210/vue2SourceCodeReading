@@ -473,3 +473,168 @@ function createChildren(vnode, children, insertedVnodeQueue) {
   }
 }
 ```
+
+### isPatchable
+
+```ts
+function isPatchable(vnode) {
+  // 存在组件实例就将组件实例下的_vnode赋值给vnode
+  while (vnode.componentInstance) {
+    vnode = vnode.componentInstance._vnode
+  }
+  // 返回标签名
+  return isDef(vnode.tag)
+}
+
+// 执行所有传入节点下的create方法
+function invokeCreateHooks(vnode, insertedVnodeQueue) {
+  for (let i = 0; i < cbs.create.length; ++i) {
+    cbs.create[i](emptyNode, vnode)
+  }
+  i = vnode.data.hook // Reuse variable
+  if (isDef(i)) {
+    if (isDef(i.create)) i.create(emptyNode, vnode)
+    if (isDef(i.insert)) insertedVnodeQueue.push(vnode)
+  }
+}
+```
+
+### setScope
+
+```ts
+// set scope id attribute for scoped CSS.
+// this is implemented as a special case to avoid the overhead
+// of going through the normal attribute patching process.
+// 设置CSS的作用域id属性。
+// 这是作为一种特殊情况来实现的，以避免经过正常属性修补过程的开销。
+function setScope(vnode) {
+  let i
+  if (isDef((i = vnode.fnScopeId))) {
+    nodeOps.setStyleScope(vnode.elm, i)
+  } else {
+    let ancestor = vnode
+    while (ancestor) {
+      if (isDef((i = ancestor.context)) && isDef((i = i.$options._scopeId))) {
+        nodeOps.setStyleScope(vnode.elm, i)
+      }
+      ancestor = ancestor.parent
+    }
+  }
+  // for slot content they should also get the scopeId from the host instance.
+  // 对于插槽内容，他们还应该从主机实例中获取scopeId。
+  if (
+    isDef((i = activeInstance)) &&
+    i !== vnode.context &&
+    i !== vnode.fnContext &&
+    isDef((i = i.$options._scopeId))
+  ) {
+    nodeOps.setStyleScope(vnode.elm, i)
+  }
+}
+```
+
+### addVnodes
+
+```ts
+// 在指定索引范围内添加节点
+function addVnodes(
+  parentElm,
+  refElm,
+  vnodes,
+  startIdx,
+  endIdx,
+  insertedVnodeQueue
+) {
+  for (; startIdx <= endIdx; ++startIdx) {
+    createElm(
+      vnodes[startIdx],
+      insertedVnodeQueue,
+      parentElm,
+      refElm,
+      false,
+      vnodes,
+      startIdx
+    )
+  }
+}
+```
+
+### invokeDestroyHook
+
+```ts
+// 销毁节点，其实就是执行destroy钩子方法
+function invokeDestroyHook(vnode) {
+  let i, j
+  const data = vnode.data
+  if (isDef(data)) {
+    if (isDef((i = data.hook)) && isDef((i = i.destroy))) i(vnode)
+    for (i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode)
+  }
+  // 如果存在子节点就递归调用invokeDestroyHook
+  if (isDef((i = vnode.children))) {
+    for (j = 0; j < vnode.children.length; ++j) {
+      invokeDestroyHook(vnode.children[j])
+    }
+  }
+}
+```
+
+### removeVnodes
+
+```ts
+// 移除指定索引范围内的节点
+function removeVnodes(vnodes, startIdx, endIdx) {
+  for (; startIdx <= endIdx; ++startIdx) {
+    const ch = vnodes[startIdx]
+    if (isDef(ch)) {
+      if (isDef(ch.tag)) {
+        removeAndInvokeRemoveHook(ch)
+        invokeDestroyHook(ch)
+      } else {
+        // Text node
+        removeNode(ch.elm)
+      }
+    }
+  }
+}
+```
+
+### removeAndInvokeRemoveHook
+
+```ts
+// 移除并调用remove的钩子方法
+function removeAndInvokeRemoveHook(vnode, rm?: any) {
+  if (isDef(rm) || isDef(vnode.data)) {
+    let i
+    const listeners = cbs.remove.length + 1
+    if (isDef(rm)) {
+      // we have a recursively passed down rm callback
+      // increase the listeners count
+      rm.listeners += listeners
+    } else {
+      // directly removing
+      rm = createRmCb(vnode.elm, listeners)
+    }
+    // recursively invoke hooks on child component root node
+    // 递归调用子组件根节点商的钩子
+    if (
+      isDef((i = vnode.componentInstance)) &&
+      isDef((i = i._vnode)) &&
+      isDef(i.data)
+    ) {
+      removeAndInvokeRemoveHook(i, rm)
+    }
+    for (i = 0; i < cbs.remove.length; ++i) {
+      // 调用remove钩子
+      cbs.remove[i](vnode, rm)
+    }
+    if (isDef((i = vnode.data.hook)) && isDef((i = i.remove))) {
+      i(vnode, rm)
+    } else {
+      rm()
+    }
+  } else {
+    removeNode(vnode.elm)
+  }
+}
+```

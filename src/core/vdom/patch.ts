@@ -469,6 +469,7 @@ export function createPatchFunction(backend) {
         rm = createRmCb(vnode.elm, listeners)
       }
       // recursively invoke hooks on child component root node
+      // 递归调用子组件根节点商的钩子
       if (
         isDef((i = vnode.componentInstance)) &&
         isDef((i = i._vnode)) &&
@@ -477,6 +478,7 @@ export function createPatchFunction(backend) {
         removeAndInvokeRemoveHook(i, rm)
       }
       for (i = 0; i < cbs.remove.length; ++i) {
+        // 调用remove钩子
         cbs.remove[i](vnode, rm)
       }
       if (isDef((i = vnode.data.hook)) && isDef((i = i.remove))) {
