@@ -491,7 +491,7 @@ export function createPatchFunction(backend) {
     }
   }
 
-  // 更新子节点 | 重要！
+  // 更新子节点 | TODO
   function updateChildren(
     parentElm,
     oldCh,
@@ -667,7 +667,7 @@ export function createPatchFunction(backend) {
     }
   }
 
-  // 更新节点
+  // 更新节点 || TODO
   function patchVnode(
     oldVnode,
     vnode,
@@ -769,7 +769,7 @@ export function createPatchFunction(backend) {
   const isRenderedModule = makeMap('attrs,class,staticClass,staticStyle,key')
 
   // Note: this is a browser-only function so we can assume elms are DOM nodes.
-  // 注意：这是一个仅用于浏览器的函数所以我们可以假设elms是DOM节点
+  // 注意：这是一个仅用于浏览器的函数所以我们可以假设elms是DOM节点 || todo
   function hydrate(elm, vnode, insertedVnodeQueue, inVPre?: boolean) {
     let i
     const { tag, data, children } = vnode
@@ -891,7 +891,7 @@ export function createPatchFunction(backend) {
     }
   }
 
-  // 返回一个patch函数对后续的节点进行patch操作
+  // 返回一个patch函数对后续的节点进行patch操作 || todo
   return function patch(oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
       // 如果新节点不存在, 但老节点存在, 则调用destroy钩子函数对老节点进行销毁

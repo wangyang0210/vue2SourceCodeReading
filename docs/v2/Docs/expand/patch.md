@@ -638,3 +638,73 @@ function removeAndInvokeRemoveHook(vnode, rm?: any) {
   }
 }
 ```
+
+### checkDuplicateKeys
+
+```ts
+// 检查传入节点的key是否重复
+function checkDuplicateKeys(children) {
+  const seenKeys = {}
+  for (let i = 0; i < children.length; i++) {
+    const vnode = children[i]
+    const key = vnode.key
+    if (isDef(key)) {
+      if (seenKeys[key]) {
+        warn(
+          `Duplicate keys detected: '${key}'. This may cause an update error.`,
+          vnode.context
+        )
+      } else {
+        seenKeys[key] = true
+      }
+    }
+  }
+}
+```
+
+### findIdxInOld
+
+```ts
+function findIdxInOld(node, oldCh, start, end) {
+  for (let i = start; i < end; i++) {
+    const c = oldCh[i]
+    if (isDef(c) && sameVnode(node, c)) return i
+  }
+}
+```
+
+### invokeInsertHook
+
+```ts
+// 调用insert钩子函数
+function invokeInsertHook(vnode, queue, initial) {
+  // delay insert hooks for component root nodes, invoke them after the
+  // element is really inserted
+  // 延迟组件根节点的insert钩子函数，在真正插入元素后调用它们
+  if (isTrue(initial) && isDef(vnode.parent)) {
+    vnode.parent.data.pendingInsert = queue
+  } else {
+    for (let i = 0; i < queue.length; ++i) {
+      queue[i].data.hook.insert(queue[i])
+    }
+  }
+}
+```
+
+### assertNodeMatch
+
+```ts
+// 判断节点是否匹配
+function assertNodeMatch(node, vnode, inVPre) {
+  if (isDef(vnode.tag)) {
+    return (
+      vnode.tag.indexOf('vue-component') === 0 ||
+      (!isUnknownElement(vnode, inVPre) &&
+        vnode.tag.toLowerCase() ===
+          (node.tagName && node.tagName.toLowerCase()))
+    )
+  } else {
+    return node.nodeType === (vnode.isComment ? 8 : 3)
+  }
+}
+```
