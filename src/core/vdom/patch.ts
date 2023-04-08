@@ -499,27 +499,37 @@ export function createPatchFunction(backend) {
     insertedVnodeQueue,
     removeOnly
   ) {
+    // 老节点开始索引
     let oldStartIdx = 0
+    // 新节点开始索引
     let newStartIdx = 0
+    // 老节点结束索引
     let oldEndIdx = oldCh.length - 1
+    // 老节点第一个节点
     let oldStartVnode = oldCh[0]
+    // 老节点最后一个节点
     let oldEndVnode = oldCh[oldEndIdx]
+    // 新节点开始索引
     let newEndIdx = newCh.length - 1
+    // 新节点第一个节点
     let newStartVnode = newCh[0]
+    // 新节点最后一个节点
     let newEndVnode = newCh[newEndIdx]
+
+    // 老节点遍历时得到的oldIdx | 新节点对应的老节点的oldIdx | 需要移动的老节点 | 锚点
     let oldKeyToIdx, idxInOld, vnodeToMove, refElm
 
     // removeOnly is a special flag used only by <transition-group>
     // to ensure removed elements stay in correct relative positions
     // during leaving transitions
-    // removeOnly是一个特殊标志，仅由＜transition group＞使用，以确保移除的元素在离开过渡期间保持在正确的相对位置
+    // removeOnly是一个特殊标志，仅在＜transition group＞使用，以确保移除的元素在离开过渡期间保持在正确的相对位置
     const canMove = !removeOnly
 
     // dev环境下会检查组件的新节点的key是否存在重复的情况
     if (__DEV__) {
       checkDuplicateKeys(newCh)
     }
-
+    // 对新老节点进行遍历，任意一个遍历完成就结束遍历
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
       if (isUndef(oldStartVnode)) {
         oldStartVnode = oldCh[++oldStartIdx] // Vnode has been moved left
@@ -625,6 +635,7 @@ export function createPatchFunction(backend) {
         newStartVnode = newCh[++newStartIdx]
       }
     }
+
     if (oldStartIdx > oldEndIdx) {
       refElm = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm
       addVnodes(
