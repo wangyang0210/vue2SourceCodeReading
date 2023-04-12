@@ -71,6 +71,8 @@ export function generate(
   }
 }
 
+// todo
+
 export function genElement(el: ASTElement, state: CodegenState): string {
   if (el.parent) {
     el.pre = el.pre || el.parent.pre
@@ -126,7 +128,7 @@ export function genElement(el: ASTElement, state: CodegenState): string {
 function checkBindingType(bindings: BindingMetadata, key: string) {
   const camelName = camelize(key)
   const PascalName = capitalize(camelName)
-  const checkType = (type) => {
+  const checkType = type => {
     if (bindings[key] === type) {
       return key
     }

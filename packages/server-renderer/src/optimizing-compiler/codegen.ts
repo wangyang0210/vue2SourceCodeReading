@@ -1,6 +1,9 @@
 // The SSR codegen is essentially extending the default codegen to handle
+//SSR编解码器本质上是在扩展默认的编解码器以处理
 // SSR-optimizable nodes and turn them into string render fns. In cases where
+//SSR可优化节点，并将它们转换为字符串渲染fns。在以下情况下
 // a node is not optimizable it simply falls back to the default codegen.
+//节点是不可优化的，它只是返回到默认的代码生成。
 
 import {
   genIf,

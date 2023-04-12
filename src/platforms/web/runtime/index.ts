@@ -26,7 +26,9 @@ Vue.config.getTagNamespace = getTagNamespace
 Vue.config.isUnknownElement = isUnknownElement
 
 // install platform runtime directives & components
+// 安装指令
 extend(Vue.options.directives, platformDirectives)
+// 安装组件
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
