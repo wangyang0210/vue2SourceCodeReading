@@ -13,6 +13,7 @@
   - [Vue initState](Docs/Basic/initState.md)
   - [Vue initProvide](Docs/Basic/initProvide.md)
   - [Vue $mount](Docs/Basic/$mount.md)
+  - [Vue stateMixin](Docs/Basic/stateMixin.md)
 
 - 扩展
 
