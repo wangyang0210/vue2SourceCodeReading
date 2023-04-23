@@ -392,32 +392,40 @@ export function stateMixin(Vue: typeof Component) {
   // flow somehow has problems with directly declared definition object
   // when using Object.defineProperty, so we have to procedurally build up
   // the object here.
+ // $data
   const dataDef: any = {}
   dataDef.get = function () {
     return this._data
-  }
+    }
+ // $props
   const propsDef: any = {}
   propsDef.get = function () {
     return this._props
-  }
+    }
+    // 开发环境下针对set行为的警告
   if (__DEV__) {
-    dataDef.set = function () {
+      dataDef.set = function () {
+        // 不可以替换根实例上的$data
       warn(
         'Avoid replacing instance root $data. ' +
           'Use nested data properties instead.',
         this
       )
-    }
+      }
+    // $props是只读的
     propsDef.set = function () {
       warn(`$props is readonly.`, this)
     }
-  }
+    }
+    // 将dataDef和propsDef 添加到原型链上
   Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
 
+  // 将set和del方法挂载到原型链上 || 位于observer/index.ts
   Vue.prototype.$set = set
   Vue.prototype.$delete = del
 
+  // $watch方法定义
   Vue.prototype.$watch = function (
     expOrFn: string | (() => any),
     cb: any,
@@ -428,8 +436,10 @@ export function stateMixin(Vue: typeof Component) {
       return createWatcher(vm, expOrFn, cb, options)
     }
     options = options || {}
-    options.user = true
-    const watcher = new Watcher(vm, expOrFn, cb, options)
+      options.user = true
+      // 位于obeserver/watcher.ts
+      const watcher = new Watcher(vm, expOrFn, cb, options)
+      // 深度监听
     if (options.immediate) {
       const info = `callback for immediate watcher "${watcher.expression}"`
       pushTarget()
