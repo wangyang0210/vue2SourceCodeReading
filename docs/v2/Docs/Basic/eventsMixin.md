@@ -1,67 +1,11 @@
-import type { Component } from 'types/component'
-import {
-    tip,
-    toArray,
-    isArray,
-    hyphenate,
-    formatComponentName,
-    invokeWithErrorHandling
-} from '../util/index'
-import { updateListeners } from '../vdom/helpers/index'
+# 前言
+按着流程接下来就到了`eventsMixin`，这里面其实主要是`$on`，`$once`，`$off`，`$emit`的方法定义。
 
-export function initEvents(vm: Component) {
-    // 创建一个空对象存放_events
-    vm._events = Object.create(null)
-    // 创建一个生命周期监听事件的标识属性
-    // Hook Event 可以从组件外部为组件注入额外的生命周期方法
-    vm._hasHookEvent = false
-    // init parent attached events
-    // 获取initInternalComponent(options合并时候)的父组件自定义事件
-    const listeners = vm.$options._parentListeners
-    if (listeners) {
-        // 进行事件绑定，将父级的事件绑定到当前组件上
-        updateComponentListeners(vm, listeners)
-    }
-}
+# 内容
 
-let target: any
+>`eventsMixin`位于`src/core/instance/events.ts`下
 
-function add(event, fn) {
-    target.$on(event, fn)
-}
-
-function remove(event, fn) {
-    target.$off(event, fn)
-}
-
-function createOnceHandler(event, fn) {
-    const _target = target
-    return function onceHandler() {
-        const res = fn.apply(null, arguments)
-        if (res !== null) {
-            _target.$off(event, onceHandler)
-        }
-    }
-}
-
-export function updateComponentListeners(
-    vm: Component,
-    listeners: Object,
-    oldListeners?: Object | null
-) {
-    target = vm
-    // 更新事件|事件注册
-    updateListeners(
-        listeners, // 父级事件
-        oldListeners || {},
-        add, // 处理$on
-        remove, // 处理$off
-        createOnceHandler, //处理$once
-        vm
-    )
-    target = undefined
-}
-
+```ts
 export function eventsMixin(Vue: typeof Component) {
     const hookRE = /^hook:/
     // https://v2.cn.vuejs.org/v2/api/#vm-on
@@ -175,3 +119,13 @@ export function eventsMixin(Vue: typeof Component) {
         return vm
     }
 }
+```
+
+
+## 总结
+```
+1. $on 方法定义
+2. $once 方法定义
+3. $off 方法定义
+4. $emit 方法定义
+```
