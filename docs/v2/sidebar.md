@@ -15,6 +15,7 @@
   - [Vue $mount](Docs/Basic/$mount.md)
   - [Vue stateMixin](Docs/Basic/stateMixin.md)
   - [Vue eventsMixin](Docs/Basic/eventsMixin.md)
+  - [Vue lifecycleMixin](Docs/Basic/lifecycleMixin.md)
 
 - 扩展
 
