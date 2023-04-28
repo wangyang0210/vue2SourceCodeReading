@@ -16,6 +16,7 @@
   - [Vue stateMixin](Docs/Basic/stateMixin.md)
   - [Vue eventsMixin](Docs/Basic/eventsMixin.md)
   - [Vue lifecycleMixin](Docs/Basic/lifecycleMixin.md)
+  - [Vue renderMixin](Docs/Basic/renderMixin.md)
 
 - 扩展
 
