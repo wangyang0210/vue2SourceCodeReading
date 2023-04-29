@@ -18,6 +18,8 @@
   - [Vue lifecycleMixin](Docs/Basic/lifecycleMixin.md)
   - [Vue renderMixin](Docs/Basic/renderMixin.md)
 
+- 高级
+  - [响应式详解](Docs/senior/observe.md)
 - 扩展
 
   - [Vue Error](Docs/expand/errorHandler.md)
