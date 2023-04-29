@@ -24,3 +24,4 @@
 
   - [Vue Error](Docs/expand/errorHandler.md)
   - [Vue patch](Docs/expand/patch.md)
+  - [Vue patch](Docs/expand/directives.md)
