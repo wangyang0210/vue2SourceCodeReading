@@ -31,9 +31,19 @@ descriptor：要定义或修改属性的描述符。
 
 > 对于Vue响应式来说最重要的是get和set方法，在获取属性值的时候触发getter，设置属性值的时候触发setter。
 
+### Object.defineProperty实现
 
 返回值：
 
 ```
 被传递给函数的对象
 ```
+
+
+
+## proxy
+
+
+
+## proxy实现
+
