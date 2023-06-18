@@ -61,4 +61,29 @@ msg = vm.msg          // get
 
 ## proxy
 
+开发过程中，我们经常会直接使用 this.<属性名>的形式访问 props 或者 data 中的值，这是因为 Vue 为 props 和 data 默认做了 proxy 代理。
+
 ## proxy 实现
+
+> 在`src/core/instance/state.ts`中我们可以看到 proxy 的定义方法, 在方法中不难发现是对 get 和 set 做了劫持;
+
+```ts
+const sharedPropertyDefinition = {
+  enumerable: true,
+  configurable: true,
+  get: noop,
+  set: noop
+}
+
+export function proxy(target: Object, sourceKey: string, key: string) {
+  // get方法
+  sharedPropertyDefinition.get = function proxyGetter() {
+    return this[sourceKey][key]
+  }
+  // set方法
+  sharedPropertyDefinition.set = function proxySetter(val) {
+    this[sourceKey][key] = val
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+```
